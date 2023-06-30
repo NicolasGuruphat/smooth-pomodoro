@@ -1,10 +1,11 @@
 <template>
-    <button class="base-button" @click="action">{{ text }}</button>
+    <button class="base-button" @click="action">
+        <slot></slot>
+    </button>
 </template>
 <script>
 export default {
     props:{
-        text:String, 
         action:Function
     }
 }

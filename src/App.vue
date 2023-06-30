@@ -4,8 +4,7 @@
   <div class="progress-bar-base" :style="progressBarGradiant">
   <span class="timer" :class="{'working' : working, 'not-working' : !working}">{{ timer }}</span>
   <div>
-    <ActionButton :action="startOrStop" :text="startOrStopLabel"></ActionButton>
-    
+    <ActionButton :action="startOrStop">{{ startOrStopLabel }}</ActionButton>
   </div>
 </div>
 </template>

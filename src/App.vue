@@ -3,9 +3,33 @@
 <template>
   <div class="progress-bar-base" :style="progressBarGradiant">
   <p class="stats-block" >
-    Current pomodoro number : <span class="stat">{{pomodoroNumber}}</span> 
+    Current pomodoro number : <span class="stat">{{pomodoroNumber}}/{{pomodoriByCycle}}</span> 
+    <span class="stat-selector" :class="{'disabled':pomodoriByCycle==0}" @click="pomodoriByCycle--" >-</span>
+    <span class="stat-selector" @click="pomodoriByCycle++">+</span>
     <br> 
-    Total pomodoro : <span class="stat">{{totalPomodoro}}</span>
+    Total pomodoro : <span class="stat">{{totalPomodoro}}<template v-if="goal!=0">/{{goal}}</template></span> 
+    <span class="stat-selector" :class="{'disabled':goal==0}" @click="goal--" :disabled="goal==0">-</span>
+    <span class="stat-selector" @click="goal++">+</span>
+    <br> 
+    <br> 
+    Break Time (in minutes) :
+    <ul>
+      <li>
+        small : {{ breakTime.small.minutes }}
+        <span class="stat-selector" :class="{'disabled':breakTime.small.minutes==0}" @click="breakTime.small.minutes--" :disabled="breakTime.small.minutes==0">-</span>
+        <span class="stat-selector" @click="breakTime.small.minutes++">+</span>
+      </li>
+      <li>
+        big : {{ breakTime.big.minutes }}
+        <span class="stat-selector" :class="{'disabled':breakTime.big.minutes==0}" @click="breakTime.big.minutes--" :disabled="breakTime.big.minutes==0">-</span>
+        <span class="stat-selector" @click="breakTime.big.minutes++">+</span>
+      </li>
+    </ul>
+    <br>
+    Pomodoro Time (in minutes) :
+    small : {{ pomodoroTime.minutes }}
+        <span class="stat-selector" :class="{'disabled':pomodoroTime.minutes==0}" @click="pomodoroTime.minutes--" :disabled="pomodoroTime.minutes==0">-</span>
+        <span class="stat-selector" @click="pomodoroTime.minutes++">+</span>
   </p>
 
   <span class="timer" :class="{'working' : working, 'not-working' : !working}">{{ timer }}</span>
@@ -15,6 +39,10 @@
     <ActionButton :action="globalReset">RESET</ActionButton>
     <ActionButton :action="goBackToFirstPomodoro">→1<sup>st</sup></ActionButton>
   </div>
+  <footer>
+    <div>smooth-pomodoro - NicolasGuruphat</div>  
+    <a href="https://www.flaticon.com/authors/pixel-perfect" title="tomato icons">Tomato icons created by Pixel perfect - Flaticon</a>
+  </footer>
 </div>
 </template>
 
@@ -41,6 +69,7 @@ export default {
           seconds : 0
         }
       },
+      pomodoriByCycle : 4,
       seconds : null,
       minutes : null,
       startOrStopLabel : "STOP",
@@ -48,7 +77,8 @@ export default {
       working : true,
       progression : 0,
       pomodoroNumber : 1, // between 1 and 4
-      totalPomodoro : 0
+      totalPomodoro : 0,
+      goal : 0
     }
   },
   computed:{
@@ -59,16 +89,19 @@ export default {
       return minutesToDisplay+":"+secondsToDisplay;
     },
     progressBarGradiant(){
-      if(this.working){
-      let baseTime = 25*60
+      let baseTime = this.working ? this.pomodoroTime.minutes*60 + this.pomodoroTime.seconds : this.breakTime.small.minutes*60 + this.breakTime.small.seconds*60;
       let currentTime = baseTime-(this.minutes*60+this.seconds)
-      let progression = ((currentTime/baseTime)-0.40)*100*2.5 *-1
+      let progression = ((currentTime/baseTime)-0.5)*100*2*-1
+      if(this.working){
       return {
         "background": `linear-gradient(75deg, rgba(255,0,0,1) ${progression}%, rgba(0,255,12,1) 100%)`
       }
       }else{
-        return {};
-      }      
+        return {
+          "background": "green"
+          // "background": `linear-gradient(75deg, rgba(255,0,0,1) 100%,  rgba(0,255,12,1) ${progression}%)`
+        };
+      }
     }
   },
   methods:{
@@ -94,12 +127,12 @@ export default {
     startTimer(){
       this.intervalId = setInterval(() => {
         this.seconds --;
-      }, 1)
+      }, 1000)
     },
     switchSession() {
       if(this.working){
         // switch to pause session
-        if(this.pomodoroNumber == 4){
+        if(this.pomodoroNumber == this.pomodoriByCycle){
           this.minutes = this.breakTime.big.minutes;
           this.seconds = this.breakTime.big.seconds;
         }else{
@@ -109,7 +142,7 @@ export default {
         this.totalPomodoro += 1
       }else{
         // switch to work session
-        this.pomodoroNumber = (this.pomodoroNumber ) % 4 + 1
+        this.pomodoroNumber = (this.pomodoroNumber ) % this.pomodoriByCycle + 1
         this.minutes = this.pomodoroTime.minutes
         this.seconds = this.pomodoroTime.seconds
         
@@ -191,5 +224,28 @@ export default {
 }
 .stat{
   text-decoration: underline;
+}
+.stat-selector{
+  border:1px solid var(--grey);
+  display: inline-block;
+  width: 20px;
+  text-align: center;
+  background-color: rgba(252,252,252,0.5);
+  border-radius:100px;
+  cursor: pointer;
+}
+.disabled{
+  pointer-events: none;
+  background-color: var(--grey);
+}
+footer{
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+}
+ul{
+  margin:0;
 }
 </style>

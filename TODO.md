@@ -1,2 +1,4 @@
 - Add the possibility to add/remove on minutes from the timer
 - Try to split stat in another component
+- Finish gradiant system for pause
+- Fix gradiant calcul of baseTime

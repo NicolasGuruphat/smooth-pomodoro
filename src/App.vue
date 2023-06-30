@@ -4,7 +4,7 @@
   <div class="progress-bar-base" :style="progressBarGradiant">
   <p class="stats-block" >
     Current pomodoro number : <span class="stat">{{pomodoroNumber}}/{{pomodoriByCycle}}</span> 
-    <span class="stat-selector" :class="{'disabled':pomodoriByCycle==0}" @click="pomodoriByCycle--" >-</span>
+    <span class="stat-selector" :class="{'disabled':pomodoriByCycle==1}" @click="pomodoriByCycle--" >-</span>
     <span class="stat-selector" @click="pomodoriByCycle++">+</span>
     <br> 
     Total pomodoro : <span class="stat">{{totalPomodoro}}<template v-if="goal!=0">/{{goal}}</template></span> 
@@ -26,10 +26,9 @@
       </li>
     </ul>
     <br>
-    Pomodoro Time (in minutes) :
-    small : {{ pomodoroTime.minutes }}
-        <span class="stat-selector" :class="{'disabled':pomodoroTime.minutes==0}" @click="pomodoroTime.minutes--" :disabled="pomodoroTime.minutes==0">-</span>
-        <span class="stat-selector" @click="pomodoroTime.minutes++">+</span>
+    Pomodoro Time (in minutes) : {{ pomodoroTime.minutes }}
+    <span class="stat-selector" :class="{'disabled':pomodoroTime.minutes==0}" @click="pomodoroTime.minutes--" :disabled="pomodoroTime.minutes==0">-</span>
+    <span class="stat-selector" @click="pomodoroTime.minutes++">+</span>
   </p>
 
   <span class="timer" :class="{'working' : working, 'not-working' : !working}">{{ timer }}</span>
@@ -37,7 +36,7 @@
     <ActionButton :action="startOrStop">{{ startOrStopLabel }}</ActionButton>
     <ActionButton :action="skipCurrentPomodoro">SKIP</ActionButton>
     <ActionButton :action="globalReset">RESET</ActionButton>
-    <ActionButton :action="goBackToFirstPomodoro">→1<sup>st</sup></ActionButton>
+    <ActionButton :action="goBackToFirstPomodoro" :enabled="pomodoroNumber!=1 || !working">→1<sup>st</sup></ActionButton>
   </div>
   <footer>
     <div>smooth-pomodoro - NicolasGuruphat</div>  

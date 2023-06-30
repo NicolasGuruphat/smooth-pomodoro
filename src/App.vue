@@ -11,6 +11,9 @@
   <span class="timer" :class="{'working' : working, 'not-working' : !working}">{{ timer }}</span>
   <div>
     <ActionButton :action="startOrStop">{{ startOrStopLabel }}</ActionButton>
+    <ActionButton :action="skipCurrentPomodoro">SKIP</ActionButton>
+    <ActionButton :action="globalReset">RESET</ActionButton>
+    <ActionButton :action="goBackToFirstPomodoro">→1<sup>st</sup></ActionButton>
   </div>
 </div>
 </template>
@@ -65,12 +68,11 @@ export default {
       }
       }else{
         return {};
-      }
+      }      
     }
   },
   methods:{
     startOrStop() {
-      console.log(this.startOrStopLabel);
       if(this.startOrStopLabel === "STOP"){
         this.startOrStopLabel = "START"
         clearInterval(this.intervalId)
@@ -84,7 +86,7 @@ export default {
         if(this.seconds == -1){
           this.seconds = 59
           this.minutes --
-          if(this.minutes == 0){
+          if(this.minutes == -1){
             this.switchSession()
           }
         }
@@ -115,6 +117,28 @@ export default {
       this.working = !this.working
     },
     skipCurrentPomodoro() {
+      this.minutes = 0
+      this.seconds = 0
+    },
+    globalReset(){
+      this.resetTimer();
+      this.totalPomodoro = 0;
+      this.pomodoroNumber = 1;
+    },
+    goBackToFirstPomodoro(){
+      // go back to the first pomodoro of the current group of 
+      if(this.working){
+        this.totalPomodoro -= (this.pomodoroNumber-1)  
+      }else{
+        this.totalPomodoro -= this.pomodoroNumber
+      }
+      this.pomodoroNumber = 1
+      this.resetTimer()
+    },
+    resetTimer(){
+      this.minutes = this.pomodoroTime.minutes
+      this.seconds = this.pomodoroTime.seconds 
+      this.working = true
 
     }
   },
@@ -126,15 +150,15 @@ export default {
 }
 </script>
 
-<style>
+<style >
+:root {
+  --grey: #2c3e50
+}
 #app {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-  -webkit-text-stroke: 2px black;
 }
 .working {
   color : lightcoral
@@ -145,6 +169,7 @@ export default {
 
 .timer {
   font-size: 10vh;
+  -webkit-text-stroke: 1.5px var(--grey);
 }
 .progress-bar-base{
   height: 100vh;
@@ -152,7 +177,7 @@ export default {
   position: absolute;
   top:0;  
   left:0;
-  background: rgb(255,0,0)
+  /* background: rgb(255,0,0) */
 }
 .stats-block{
   position: absolute;

@@ -1,7 +1,9 @@
 <template>
-    <button class="base-button" @click="action">
-        <slot></slot>
-    </button>
+    <div>
+        <button class="base-button" @click="action">
+            <slot></slot>
+        </button>
+    </div>
 </template>
 <script>
 export default {
@@ -17,6 +19,9 @@ export default {
   border-radius: 10px;
   padding: 10px;
   color:white;
-  font-size:5vh
+  font-size:5vh;
+  margin: 1vh;
+  cursor: pointer;
+
 }
 </style>

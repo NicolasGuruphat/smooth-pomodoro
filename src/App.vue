@@ -2,6 +2,12 @@
 
 <template>
   <div class="progress-bar-base" :style="progressBarGradiant">
+  <p class="stats-block" >
+    Current pomodoro number : <span class="stat">{{pomodoroNumber}}</span> 
+    <br> 
+    Total pomodoro : <span class="stat">{{totalPomodoro}}</span>
+  </p>
+
   <span class="timer" :class="{'working' : working, 'not-working' : !working}">{{ timer }}</span>
   <div>
     <ActionButton :action="startOrStop">{{ startOrStopLabel }}</ActionButton>
@@ -18,12 +24,28 @@ export default {
   },
   data() {
     return {
-      seconds : 0,
-      minutes : 25,
+      pomodoroTime : {
+        minutes : 25,
+        seconds : 0
+      },
+      breakTime : {
+        small : {
+          minutes : 5,
+          seconds : 0
+        },
+        big : {
+          minutes : 15,
+          seconds : 0
+        }
+      },
+      seconds : null,
+      minutes : null,
       startOrStopLabel : "STOP",
       intervalId : null,
       working : true,
       progression : 0,
+      pomodoroNumber : 1, // between 1 and 4
+      totalPomodoro : 0
     }
   },
   computed:{
@@ -34,11 +56,15 @@ export default {
       return minutesToDisplay+":"+secondsToDisplay;
     },
     progressBarGradiant(){
+      if(this.working){
       let baseTime = 25*60
       let currentTime = baseTime-(this.minutes*60+this.seconds)
       let progression = ((currentTime/baseTime)-0.40)*100*2.5 *-1
       return {
         "background": `linear-gradient(75deg, rgba(255,0,0,1) ${progression}%, rgba(0,255,12,1) 100%)`
+      }
+      }else{
+        return {};
       }
     }
   },
@@ -71,25 +97,38 @@ export default {
     switchSession() {
       if(this.working){
         // switch to pause session
-        this.minutes = 5
-        this.seconds = 0
+        if(this.pomodoroNumber == 4){
+          this.minutes = this.breakTime.big.minutes;
+          this.seconds = this.breakTime.big.seconds;
+        }else{
+          this.minutes = this.breakTime.small.minutes;
+          this.seconds = this.breakTime.small.seconds;
+        }
+        this.totalPomodoro += 1
       }else{
         // switch to work session
-        this.minutes = 25
-        this.seconds = 0
+        this.pomodoroNumber = (this.pomodoroNumber ) % 4 + 1
+        this.minutes = this.pomodoroTime.minutes
+        this.seconds = this.pomodoroTime.seconds
+        
       }
       this.working = !this.working
+    },
+    skipCurrentPomodoro() {
+
     }
   },
   mounted(){
-   this.startTimer()
+    this.minutes = this.pomodoroTime.minutes
+    this.seconds = this.pomodoroTime.seconds
+    this.startTimer()
   }
 }
 </script>
 
 <style>
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
@@ -114,5 +153,18 @@ export default {
   top:0;  
   left:0;
   background: rgb(255,0,0)
+}
+.stats-block{
+  position: absolute;
+  margin-top: 5px;
+  margin-left: 5px;
+  font-size: 20px; 
+  text-align: left;
+  border: none;
+  -webkit-text-stroke: 0;
+  color: white;
+}
+.stat{
+  text-decoration: underline;
 }
 </style>

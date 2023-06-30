@@ -4,16 +4,18 @@
   <div class="progress-bar-base" :style="progressBarGradiant">
   <span class="timer" :class="{'working' : working, 'not-working' : !working}">{{ timer }}</span>
   <div>
-    <button class="start-and-stop" @click="startOrStop">{{startOrStopLabel}}</button>
+    <ActionButton :action="startOrStop" :text="startOrStopLabel"></ActionButton>
+    
   </div>
 </div>
 </template>
 
 <script>
-
+import ActionButton from './components/ActionButton.vue';
 export default {
   name: 'App',
   components: {
+    ActionButton
   },
   data() {
     return {
@@ -94,6 +96,7 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+  -webkit-text-stroke: 2px black;
 }
 .working {
   color : lightcoral
@@ -101,12 +104,9 @@ export default {
 .not-working {
   color : greenyellow
 }
+
 .timer {
   font-size: 10vh;
-  -webkit-text-stroke: 2px black;
-}
-.start-and-stop {
-  font-size:5vh
 }
 .progress-bar-base{
   height: 100vh;

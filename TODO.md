@@ -1,0 +1,2 @@
+- Add the possibility to add/remove on minutes from the timer
+- Try to split stat in another component

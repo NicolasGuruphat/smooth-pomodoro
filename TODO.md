@@ -8,7 +8,8 @@
 - Fix gradiant calcul of baseTime
 - Save data in local storage
 - ✔ Add sound effects
-- Time before break
+- Time before big break
+- Time before goal
 - Split timer in another component
 
 ## BUGS

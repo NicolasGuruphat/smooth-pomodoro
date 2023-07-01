@@ -16,14 +16,14 @@ export default {
 <style>
 .base-button {
   background-color: transparent;
-  border: 4px solid var(--grey);
+  border: 3px solid rgba(252,252,252,0.5);
   border-radius: 20px;
+  font-weight: bold;
   padding: 10px;
   color:white;
-  font-size:5vh;
+  font-size:4vh;
   margin: 1vh;
   cursor: pointer;
-  -webkit-text-stroke: 1.5px var(--grey);
 
 }
 </style>

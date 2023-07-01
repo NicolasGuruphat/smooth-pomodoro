@@ -5,5 +5,6 @@
     - Fix gradiant calcul of baseTime
     - Save data in local storage
     - Add sound effects
+    - Time before break
 - BUGS
     - changing pomodoro time has a direct impact on the gradiant 

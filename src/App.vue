@@ -2,7 +2,9 @@
 
 <template>
   <div class="progress-bar-base" :style="progressBarGradiant">
-    <div class="stats-block" >
+  <details class="stats-block">
+    <summary style="stat-summary">Options</summary>
+    <div>
       <div class="stat">
         <span class="stat-label">🍅 Current pomodoro number : <span class="stat-value">{{pomodoroNumber}}/{{pomodoriByCycle}}</span></span> 
         <span class="stat-selector">
@@ -51,6 +53,7 @@
         </ul>
       </div>
     </div>
+  </details>
 
     <span class="timer" :class="{'working' : working, 'not-working' : !working}">{{ timer }}</span>
     <div>
@@ -235,6 +238,7 @@ export default {
   /* background: rgb(255,0,0) */
 }
 .stats-block{
+  text-align: left;
   position: absolute;
   margin-top: 5px;
   margin-left: 5px;
@@ -268,6 +272,9 @@ export default {
 .stat{
   width : 400px; 
   height: 30px;
+}
+.stat-summary{
+
 }
 .disabled{
   pointer-events: none;

@@ -3,7 +3,7 @@
 <template>
   <div class="progress-bar-base" :style="progressBarGradiant">
   <details class="stats-block">
-    <summary style="stat-summary">Options</summary>
+    <summary style="stat-summary">⚙️</summary>
     <div>
       <div class="stat">
         <span class="stat-label">🍅 Current pomodoro number : <span class="stat-value">{{pomodoroNumber}}/{{pomodoriByCycle}}</span></span> 
@@ -13,19 +13,24 @@
         </span>
       </div> 
       <div class="stat">
-        <span class="stat-label">🎯 Total pomodoro : <span class="stat">{{totalPomodoro}}<template v-if="goal!=0">/{{goal}}</template></span></span>
+        <span class="stat-label">🎯 Total pomodoro : <span class="stat-value">{{totalPomodoro}}<template v-if="goal!=0">/{{goal}}</template></span></span>
         <span class="stat-selector">
           <button class="stat-selector-button" :class="{'disabled':goal==0, 'enabled-selector':goal!=0, 'disabled-selector':goal==0}" @click="goal--" :disabled="goal==0">-</button>
           <button class="stat-selector-button enabled-selector" @click="goal++">+</button>
         </span>
       </div>
-      <div>
-        <span class="stat-label">Timing parameters  (in minutes) :</span>
+      <div class="stat">
+        <span class="stat-label">✨ Gradiant background</span>
+        <input type="checkbox" class="stat-selector stat-selector-button enabled-selector" v-model="grandiantEnabled">
+        <label for="checkbox"></label>
+      </div>
+      <details class="stat">
+        <summary class="stat-label">⏲️ Timer options (in minutes)</summary>
         <br>
         <ul>
           <li>
             <div class="stat">
-              <span class="stat-label">Pomodoro   : {{ pomodoroTime.minutes }}</span>
+              <span class="stat-label">Pomodoro   : <span class="stat-value">{{ pomodoroTime.minutes }}</span></span>
               <span class="stat-selector">
                 <button class="stat-selector-button" :class="{'disabled':pomodoroTime.minutes==1, 'enabled-selector':pomodoroTime.minutes!=1, 'disabled-selector':pomodoroTime.minutes==1}" @click="pomodoroTime.minutes--" :disabled="pomodoroTime.minutes==0">-</button>
                 <button class="stat-selector-button enabled-selector" @click="pomodoroTime.minutes++">+</button>
@@ -34,7 +39,7 @@
           </li>
           <li>
             <div class="stat">
-              <span class="stat-label">Small break : {{ breakTime.small.minutes }}</span>
+              <span class="stat-label">Small break : <span class="stat-value">{{ breakTime.small.minutes }}</span></span>
               <span class="stat-selector">
                 <button class="stat-selector-button" :class="{'disabled':breakTime.small.minutes==1, 'enabled-selector':breakTime.small.minutes!=1, 'disabled-selector':breakTime.small.minutes==1}" @click="breakTime.small.minutes--" :disabled="breakTime.small.minutes==0">-</button>
                 <button class="stat-selector-button enabled-selector" @click="breakTime.small.minutes++">+</button>
@@ -43,7 +48,7 @@
           </li>
           <li>
             <div class="stat">
-              <span class="stat-label">Big break   : {{ breakTime.big.minutes }}</span>
+              <span class="stat-label">Big break   : <span class="stat-value">{{ breakTime.big.minutes }}</span></span>
               <span class="stat-selector">
                 <button class="stat-selector-button" :class="{'disabled':breakTime.big.minutes==1, 'enabled-selector':breakTime.big.minutes!=1, 'disabled-selector':breakTime.big.minutes==1}" @click="breakTime.big.minutes--" :disabled="breakTime.big.minutes==0">-</button>
                 <button class="stat-selector-button enabled-selector" @click="breakTime.big.minutes++">+</button>
@@ -51,7 +56,8 @@
             </div>
           </li>
         </ul>
-      </div>
+      </details>
+      
     </div>
   </details>
 
@@ -92,6 +98,7 @@ export default {
           seconds : 0
         }
       },
+      grandiantEnabled : false,
       pomodoriByCycle : 4,
       seconds : null,
       minutes : null,
@@ -112,18 +119,22 @@ export default {
       return minutesToDisplay+":"+secondsToDisplay;
     },
     progressBarGradiant(){
-      let baseTime = this.working ? this.pomodoroTime.minutes*60 + this.pomodoroTime.seconds : this.breakTime.small.minutes*60 + this.breakTime.small.seconds*60;
-      let currentTime = baseTime-(this.minutes*60+this.seconds)
-      let progression = ((currentTime/baseTime)-0.5)*100*2*-1
-      if(this.working){
-      return {
-        "background": `linear-gradient(75deg, #ffb5aa ${progression}%, #aaffb6 100%)`
-      }
+      if(this.grandiantEnabled){
+        let baseTime = this.working ? this.pomodoroTime.minutes*60 + this.pomodoroTime.seconds : this.breakTime.small.minutes*60 + this.breakTime.small.seconds*60;
+        let currentTime = baseTime-(this.minutes*60+this.seconds)
+        let progression = ((currentTime/baseTime)-0.5)*100*2*-1
+        if(this.working){
+          return {
+            "background": `linear-gradient(75deg, #ffb5aa ${progression}%, #aaffb6 100%)`
+          };
+        }else{
+            return {
+              "background": "green"
+              // "background": `linear-gradient(75deg, rgba(255,0,0,1) 100%,  rgba(0,255,12,1) ${progression}%)`
+            };
+        }
       }else{
-        return {
-          "background": "green"
-          // "background": `linear-gradient(75deg, rgba(255,0,0,1) 100%,  rgba(0,255,12,1) ${progression}%)`
-        };
+          return {"background-color" : this.working ? "#ffb5aa" : "#aaffb6" };
       }
     }
   },
@@ -218,10 +229,10 @@ export default {
   text-align: center;
 }
 .working {
-  color : lightcoral
+  color : #cc1b00
 }
 .not-working {
-  color : greenyellow
+  color :  #00cc1b
 }
 
 .timer {
@@ -262,6 +273,7 @@ export default {
 }
 .stat-selector-button{
   display: inline-block;
+  height: 20px;
   width: 20px;
   text-align: center;
   border-radius:10px;

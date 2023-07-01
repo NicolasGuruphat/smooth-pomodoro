@@ -16,12 +16,14 @@
     :breakTime="breakTime"
     :goal="goal"
     :grandiantEnabled="grandiantEnabled"
+    :audioEnabled="audioEnabled"
     @updatePomodoriByCycle="($event)=>pomodoriByCycle=$event"
     @updateBigBreakTime="($event)=>breakTime.big.minutes=$event"
     @updateSmallBreakTime="($event)=>breakTime.small.minutes=$event"
     @updateGoal="($event)=>goal=$event"
     @updatePomodoroTime="($event)=>pomodoroTime.minutes=$event"
     @updateGradiantEnabled="($event)=>grandiantEnabled=$event"
+    @updateAudioEnabled="($event)=>audioEnabled=$event"
     >
   </OptionsBlock>
 
@@ -33,8 +35,10 @@
       <ActionButton :action="goBackToFirstPomodoro" :enabled="pomodoroNumber!=1 || !working">➔1<sup>st</sup></ActionButton>
     </div>
     <footer>
-      <div>SMOOTH POMODORO - by Nicolas Guruphat</div>  
+        <div>SMOOTH POMODORO - by Nicolas Guruphat</div>  
       <a href="https://www.flaticon.com/authors/pixel-perfect" title="tomato icons">Tomato icons created by Pixel perfect - Flaticon</a>
+      <br>
+      <a href="https://freesound.org/people/InspectorJ/sounds/411575/">Sound effect by InspectorJ - Freesound</a>
     </footer>
   </div>
 </template>
@@ -43,6 +47,7 @@
 import ActionButton from './components/ActionButton.vue';
 import StatistiquesBlock from './components/StatistiquesBlock.vue';
 import OptionsBlock from './components/OptionsBlock.vue'
+
 export default {
   name: 'App',
   components: {
@@ -67,6 +72,7 @@ export default {
         }
       },
       grandiantEnabled : false,
+      audioEnabled : true,
       pomodoriByCycle : 4,
       seconds : null,
       minutes : null,
@@ -76,7 +82,8 @@ export default {
       progression : 0,
       pomodoroNumber : 1, // between 1 and 4
       totalPomodoro : 0,
-      goal : 0
+      goal : 0,
+      soundEffect : new Audio(require("./assets/gong_hit.wav"))
     }
   },
   computed:{
@@ -132,6 +139,9 @@ export default {
       }, 1000)
     },
     switchSession() {
+      if(this.audioEnabled){
+        this.soundEffect.play()
+      }
       if(this.working){
         // switch to pause session
         if(this.pomodoroNumber == this.pomodoriByCycle){

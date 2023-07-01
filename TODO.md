@@ -4,10 +4,10 @@
 - Add the possibility to add/remove on minutes from the timer
 - ✔ Try to split stat in another component
     - ✔ Plus split stat and options
-- Finish gradiant system for pause
+- Finish gradiant system for break
 - Fix gradiant calcul of baseTime
 - Save data in local storage
-- Add sound effects
+- ✔ Add sound effects
 - Time before break
 - Split timer in another component
 

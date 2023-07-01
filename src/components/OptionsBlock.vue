@@ -18,7 +18,12 @@
       </div>
       <div class="option">
         <span class="info-label">✨ Gradiant background</span>
-        <input type="checkbox" class="stat-selector stat-selector-button enabled-selector" v-model="grandiantEnabledDisplay">
+        <input type="checkbox" class="stat-selector stat-selector-button enabled-selector" v-model="grandiantEnabledOption">
+        <label for="checkbox"></label>
+      </div>
+      <div class="option">
+        <span class="info-label">🔉 Sound effect</span>
+        <input type="checkbox" class="stat-selector stat-selector-button enabled-selector" v-model="audioEnabledOption">
         <label for="checkbox"></label>
       </div>
       <details class="option">
@@ -62,7 +67,8 @@
 export default {
     data(){ 
         return {
-            grandiantEnabledDisplay:this.grandiantEnabled
+            grandiantEnabledOption:this.grandiantEnabled,
+            audioEnabledOption: this.audioEnabled
         }
     },
     props:{
@@ -71,11 +77,15 @@ export default {
         totalPomodoro: Number,
         pomodoroTime: Object,
         breakTime: Object,
-        grandiantEnabled: Boolean
+        grandiantEnabled: Boolean,
+        audioEnabled: Boolean
     },
     watch:{
-        grandiantEnabledDisplay(){
-            this.$emit('updateGradiantEnabled', this.grandiantEnabledDisplay);
+        grandiantEnabledOption(newValue){
+            this.$emit('updateGradiantEnabled', newValue);
+        },
+        audioEnabledOption(newValue){
+            this.$emit('updateAudioEnabled', newValue);
         }
     },
 }

@@ -2,47 +2,68 @@
 
 <template>
   <div class="progress-bar-base" :style="progressBarGradiant">
-  <p class="stats-block" >
-    Current pomodoro number : <span class="stat">{{pomodoroNumber}}/{{pomodoriByCycle}}</span> 
-    <span class="stat-selector" :class="{'disabled':pomodoriByCycle==1}" @click="pomodoriByCycle--" >-</span>
-    <span class="stat-selector" @click="pomodoriByCycle++">+</span>
-    <br> 
-    Total pomodoro : <span class="stat">{{totalPomodoro}}<template v-if="goal!=0">/{{goal}}</template></span> 
-    <span class="stat-selector" :class="{'disabled':goal==0}" @click="goal--" :disabled="goal==0">-</span>
-    <span class="stat-selector" @click="goal++">+</span>
-    <br> 
-    <br> 
-    Break Time (in minutes) :
-    <ul>
-      <li>
-        small : {{ breakTime.small.minutes }}
-        <span class="stat-selector" :class="{'disabled':breakTime.small.minutes==0}" @click="breakTime.small.minutes--" :disabled="breakTime.small.minutes==0">-</span>
-        <span class="stat-selector" @click="breakTime.small.minutes++">+</span>
-      </li>
-      <li>
-        big : {{ breakTime.big.minutes }}
-        <span class="stat-selector" :class="{'disabled':breakTime.big.minutes==0}" @click="breakTime.big.minutes--" :disabled="breakTime.big.minutes==0">-</span>
-        <span class="stat-selector" @click="breakTime.big.minutes++">+</span>
-      </li>
-    </ul>
-    <br>
-    Pomodoro Time (in minutes) : {{ pomodoroTime.minutes }}
-    <span class="stat-selector" :class="{'disabled':pomodoroTime.minutes==0}" @click="pomodoroTime.minutes--" :disabled="pomodoroTime.minutes==0">-</span>
-    <span class="stat-selector" @click="pomodoroTime.minutes++">+</span>
-  </p>
+    <div class="stats-block" >
+      <div class="stat">
+        <span class="stat-label">🍅 Current pomodoro number : <span class="stat-value">{{pomodoroNumber}}/{{pomodoriByCycle}}</span></span> 
+        <span class="stat-selector">
+          <button class="stat-selector-button" :class="{'disabled':pomodoriByCycle==1, 'enabled-selector':pomodoriByCycle!=1, 'disabled-selector':pomodoriByCycle==1}" @click="pomodoriByCycle--" >-</button>
+          <button class="stat-selector-button enabled-selector" @click="pomodoriByCycle++">+</button>
+        </span>
+      </div> 
+      <div class="stat">
+        <span class="stat-label">🎯 Total pomodoro : <span class="stat">{{totalPomodoro}}<template v-if="goal!=0">/{{goal}}</template></span></span>
+        <span class="stat-selector">
+          <button class="stat-selector-button" :class="{'disabled':goal==0, 'enabled-selector':goal!=0, 'disabled-selector':goal==0}" @click="goal--" :disabled="goal==0">-</button>
+          <button class="stat-selector-button enabled-selector" @click="goal++">+</button>
+        </span>
+      </div>
+      <div>
+        <span class="stat-label">Timing parameters  (in minutes) :</span>
+        <br>
+        <ul>
+          <li>
+            <div class="stat">
+              <span class="stat-label">Pomodoro   : {{ pomodoroTime.minutes }}</span>
+              <span class="stat-selector">
+                <button class="stat-selector-button" :class="{'disabled':pomodoroTime.minutes==1, 'enabled-selector':pomodoroTime.minutes!=1, 'disabled-selector':pomodoroTime.minutes==1}" @click="pomodoroTime.minutes--" :disabled="pomodoroTime.minutes==0">-</button>
+                <button class="stat-selector-button enabled-selector" @click="pomodoroTime.minutes++">+</button>
+              </span>
+            </div>
+          </li>
+          <li>
+            <div class="stat">
+              <span class="stat-label">Small break : {{ breakTime.small.minutes }}</span>
+              <span class="stat-selector">
+                <button class="stat-selector-button" :class="{'disabled':breakTime.small.minutes==1, 'enabled-selector':breakTime.small.minutes!=1, 'disabled-selector':breakTime.small.minutes==1}" @click="breakTime.small.minutes--" :disabled="breakTime.small.minutes==0">-</button>
+                <button class="stat-selector-button enabled-selector" @click="breakTime.small.minutes++">+</button>
+              </span>
+            </div>
+          </li>
+          <li>
+            <div class="stat">
+              <span class="stat-label">Big break   : {{ breakTime.big.minutes }}</span>
+              <span class="stat-selector">
+                <button class="stat-selector-button" :class="{'disabled':breakTime.big.minutes==1, 'enabled-selector':breakTime.big.minutes!=1, 'disabled-selector':breakTime.big.minutes==1}" @click="breakTime.big.minutes--" :disabled="breakTime.big.minutes==0">-</button>
+                <button class="stat-selector-button enabled-selector" @click="breakTime.big.minutes++">+</button>
+              </span>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
 
-  <span class="timer" :class="{'working' : working, 'not-working' : !working}">{{ timer }}</span>
-  <div>
-    <ActionButton :action="startOrStop">{{ startOrStopLabel }}</ActionButton>
-    <ActionButton :action="skipCurrentPomodoro">SKIP</ActionButton>
-    <ActionButton :action="globalReset">RESET</ActionButton>
-    <ActionButton :action="goBackToFirstPomodoro" :enabled="pomodoroNumber!=1 || !working">→1<sup>st</sup></ActionButton>
+    <span class="timer" :class="{'working' : working, 'not-working' : !working}">{{ timer }}</span>
+    <div>
+      <ActionButton :action="startOrStop">{{ startOrStopLabel }}</ActionButton>
+      <ActionButton :action="skipCurrentPomodoro">SKIP</ActionButton>
+      <ActionButton :action="globalReset">RESET</ActionButton>
+      <ActionButton :action="goBackToFirstPomodoro" :enabled="pomodoroNumber!=1 || !working">➔1<sup>st</sup></ActionButton>
+    </div>
+    <footer>
+      <div>smooth-pomodoro - NicolasGuruphat</div>  
+      <a href="https://www.flaticon.com/authors/pixel-perfect" title="tomato icons">Tomato icons created by Pixel perfect - Flaticon</a>
+    </footer>
   </div>
-  <footer>
-    <div>smooth-pomodoro - NicolasGuruphat</div>  
-    <a href="https://www.flaticon.com/authors/pixel-perfect" title="tomato icons">Tomato icons created by Pixel perfect - Flaticon</a>
-  </footer>
-</div>
 </template>
 
 <script>
@@ -93,7 +114,7 @@ export default {
       let progression = ((currentTime/baseTime)-0.5)*100*2*-1
       if(this.working){
       return {
-        "background": `linear-gradient(75deg, rgba(255,0,0,1) ${progression}%, rgba(0,255,12,1) 100%)`
+        "background": `linear-gradient(75deg, #ffb5aa ${progression}%, #aaffb6 100%)`
       }
       }else{
         return {
@@ -184,7 +205,8 @@ export default {
 
 <style >
 :root {
-  --grey: #2c3e50
+  --grey: #2c3e50;
+  --white: rgb(252,252,252)
 }
 #app {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -201,7 +223,8 @@ export default {
 
 .timer {
   font-size: 10vh;
-  -webkit-text-stroke: 1.5px var(--grey);
+  font-weight: bold;
+  /* -webkit-text-stroke: 1.5px var(--grey); */
 }
 .progress-bar-base{
   height: 100vh;
@@ -216,26 +239,44 @@ export default {
   margin-top: 5px;
   margin-left: 5px;
   font-size: 20px; 
-  text-align: left;
   border: none;
-  -webkit-text-stroke: 0;
-  color: white;
+  color: rgba(0, 0, 0, 0.8)
+
 }
-.stat{
+.stat-label{
+  float:left;
+}
+.stat-value{
   text-decoration: underline;
+  right: 0;
 }
+
 .stat-selector{
-  border:1px solid var(--grey);
+  display: inline-block;
+  right: 0;
+  position: absolute;
+}
+.stat-selector-button{
   display: inline-block;
   width: 20px;
   text-align: center;
-  background-color: rgba(252,252,252,0.5);
-  border-radius:100px;
+  border-radius:10px;
   cursor: pointer;
+  border: 1px solid black;
+  font-weight: bold;
+}
+.stat{
+  width : 400px; 
+  height: 30px;
 }
 .disabled{
   pointer-events: none;
-  background-color: var(--grey);
+  background-color: rgba(0, 0, 0, 0.5);
+  color: rgba(252,252,252,1);
+}
+.enabled-selector{
+  background-color: rgba(252,252,252,0.5);  
+  color: rgba(0, 0, 0, 1 );
 }
 footer{
   position: fixed;
@@ -245,6 +286,7 @@ footer{
   text-align: center;
 }
 ul{
+  list-style: "⏱️";
   margin:0;
 }
 </style>

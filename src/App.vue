@@ -2,64 +2,28 @@
 
 <template>
   <div class="progress-bar-base" :style="progressBarGradiant">
-  <details class="stats-block">
-    <summary style="stat-summary">⚙️</summary>
-    <div>
-      <div class="stat">
-        <span class="stat-label">🍅 Current pomodoro number : <span class="stat-value">{{pomodoroNumber}}/{{pomodoriByCycle}}</span></span> 
-        <span class="stat-selector">
-          <button class="stat-selector-button" :class="{'disabled':pomodoriByCycle==1, 'enabled-selector':pomodoriByCycle!=1, 'disabled-selector':pomodoriByCycle==1}" @click="pomodoriByCycle--" >-</button>
-          <button class="stat-selector-button enabled-selector" @click="pomodoriByCycle++">+</button>
-        </span>
-      </div> 
-      <div class="stat">
-        <span class="stat-label">🎯 Total pomodoro : <span class="stat-value">{{totalPomodoro}}<template v-if="goal!=0">/{{goal}}</template></span></span>
-        <span class="stat-selector">
-          <button class="stat-selector-button" :class="{'disabled':goal==0, 'enabled-selector':goal!=0, 'disabled-selector':goal==0}" @click="goal--" :disabled="goal==0">-</button>
-          <button class="stat-selector-button enabled-selector" @click="goal++">+</button>
-        </span>
-      </div>
-      <div class="stat">
-        <span class="stat-label">✨ Gradiant background</span>
-        <input type="checkbox" class="stat-selector stat-selector-button enabled-selector" v-model="grandiantEnabled">
-        <label for="checkbox"></label>
-      </div>
-      <details class="stat">
-        <summary class="stat-label">⏲️ Timer options (in minutes)</summary>
-        <br>
-        <ul>
-          <li>
-            <div class="stat">
-              <span class="stat-label">Pomodoro   : <span class="stat-value">{{ pomodoroTime.minutes }}</span></span>
-              <span class="stat-selector">
-                <button class="stat-selector-button" :class="{'disabled':pomodoroTime.minutes==1, 'enabled-selector':pomodoroTime.minutes!=1, 'disabled-selector':pomodoroTime.minutes==1}" @click="pomodoroTime.minutes--" :disabled="pomodoroTime.minutes==0">-</button>
-                <button class="stat-selector-button enabled-selector" @click="pomodoroTime.minutes++">+</button>
-              </span>
-            </div>
-          </li>
-          <li>
-            <div class="stat">
-              <span class="stat-label">Small break : <span class="stat-value">{{ breakTime.small.minutes }}</span></span>
-              <span class="stat-selector">
-                <button class="stat-selector-button" :class="{'disabled':breakTime.small.minutes==1, 'enabled-selector':breakTime.small.minutes!=1, 'disabled-selector':breakTime.small.minutes==1}" @click="breakTime.small.minutes--" :disabled="breakTime.small.minutes==0">-</button>
-                <button class="stat-selector-button enabled-selector" @click="breakTime.small.minutes++">+</button>
-              </span>
-            </div>
-          </li>
-          <li>
-            <div class="stat">
-              <span class="stat-label">Big break   : <span class="stat-value">{{ breakTime.big.minutes }}</span></span>
-              <span class="stat-selector">
-                <button class="stat-selector-button" :class="{'disabled':breakTime.big.minutes==1, 'enabled-selector':breakTime.big.minutes!=1, 'disabled-selector':breakTime.big.minutes==1}" @click="breakTime.big.minutes--" :disabled="breakTime.big.minutes==0">-</button>
-                <button class="stat-selector-button enabled-selector" @click="breakTime.big.minutes++">+</button>
-              </span>
-            </div>
-          </li>
-        </ul>
-      </details>
-      
-    </div>
-  </details>
+  <StatistiquesBlock class="stats-block"
+    :pomodoroNumber="pomodoroNumber"
+    :pomodoriByCycle="pomodoriByCycle"
+    :totalPomodoro="totalPomodoro"
+    :goal="goal"
+  >
+  </StatistiquesBlock>
+  <OptionsBlock class="option-block"
+    :pomodoriByCycle="pomodoriByCycle"
+    :totalPomodoro="totalPomodoro"
+    :pomodoroTime="pomodoroTime"
+    :breakTime="breakTime"
+    :goal="goal"
+    :grandiantEnabled="grandiantEnabled"
+    @updatePomodoriByCycle="updatePomodoriByCycle"
+    @updateBigBreakTime="updateBigBreakTime"
+    @updateSmallBreakTime="updateSmallBreakTime"
+    @updateGoal="updateGoal"
+    @updatePomodoroTime="updatePomodoroTime"
+    @updateGradiantEnabled="updateGradiantEnabled"
+    >
+  </OptionsBlock>
 
     <span class="timer" :class="{'working' : working, 'not-working' : !working}">{{ timer }}</span>
     <div>
@@ -69,7 +33,7 @@
       <ActionButton :action="goBackToFirstPomodoro" :enabled="pomodoroNumber!=1 || !working">➔1<sup>st</sup></ActionButton>
     </div>
     <footer>
-      <div>smooth-pomodoro - NicolasGuruphat</div>  
+      <div>SMOOTH POMODORO - by Nicolas Guruphat</div>  
       <a href="https://www.flaticon.com/authors/pixel-perfect" title="tomato icons">Tomato icons created by Pixel perfect - Flaticon</a>
     </footer>
   </div>
@@ -77,10 +41,14 @@
 
 <script>
 import ActionButton from './components/ActionButton.vue';
+import StatistiquesBlock from './components/StatistiquesBlock.vue';
+import OptionsBlock from './components/OptionsBlock.vue'
 export default {
   name: 'App',
   components: {
-    ActionButton
+    ActionButton, 
+    StatistiquesBlock, 
+    OptionsBlock
   },
   data() {
     return {
@@ -207,6 +175,44 @@ export default {
       this.seconds = this.pomodoroTime.seconds 
       this.working = true
 
+    },
+    updatePomodoriByCycle(operator){
+      if(operator ===  "+"){
+        this.pomodoriByCycle ++
+      }else{
+        this.pomodoriByCycle --
+      }
+    },
+    updateSmallBreakTime(operator){
+      if(operator ===  "+"){
+        this.breakTime.small.minutes ++
+      }else{
+        this.breakTime.small.minutes --
+      }
+    },
+    updateBigBreakTime(operator){
+      if(operator ===  "+"){
+        this.breakTime.big.minutes ++
+      }else{
+        this.breakTime.big.minutes --
+      }
+    },
+    updatePomodoroTime(operator){
+      if(operator ===  "+"){
+        this.pomodoroTime.minutes ++
+      }else{
+        this.pomodoroTime.minutes --
+      }
+    },
+    updateGoal(operator){
+      if(operator ===  "+"){
+        this.goal ++
+      }else{
+        this.goal --
+      }
+    },
+    updateGradiantEnabled(){
+      this.grandiantEnabled = !this.grandiantEnabled
     }
   },
   mounted(){
@@ -234,7 +240,6 @@ export default {
 .not-working {
   color :  #00cc1b
 }
-
 .timer {
   font-size: 10vh;
   font-weight: bold;
@@ -252,50 +257,28 @@ export default {
   text-align: left;
   position: absolute;
   margin-top: 5px;
-  margin-left: 5px;
+  margin-right: 5px;
+  right: 0;
   font-size: 20px; 
   border: none;
   color: rgba(0, 0, 0, 0.8)
-
 }
-.stat-label{
+.options-block{
+  text-align: left;
+  position: absolute;
+  margin-top: 5px;
+  margin-right: 5px;
+  left: 5px;
+  font-size: 20px; 
+  border: none;
+  color: rgba(0, 0, 0, 0.8)
+}
+.info-label{
   float:left;
 }
-.stat-value{
+.info-value{
   text-decoration: underline;
   right: 0;
-}
-
-.stat-selector{
-  display: inline-block;
-  right: 0;
-  position: absolute;
-}
-.stat-selector-button{
-  display: inline-block;
-  height: 20px;
-  width: 20px;
-  text-align: center;
-  border-radius:10px;
-  cursor: pointer;
-  border: 1px solid black;
-  font-weight: bold;
-}
-.stat{
-  width : 400px; 
-  height: 30px;
-}
-.stat-summary{
-
-}
-.disabled{
-  pointer-events: none;
-  background-color: rgba(0, 0, 0, 0.5);
-  color: rgba(252,252,252,1);
-}
-.enabled-selector{
-  background-color: rgba(252,252,252,0.5);  
-  color: rgba(0, 0, 0, 1 );
 }
 footer{
   position: fixed;

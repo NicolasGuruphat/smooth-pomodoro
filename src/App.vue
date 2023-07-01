@@ -16,12 +16,12 @@
     :breakTime="breakTime"
     :goal="goal"
     :grandiantEnabled="grandiantEnabled"
-    @updatePomodoriByCycle="updatePomodoriByCycle"
-    @updateBigBreakTime="updateBigBreakTime"
-    @updateSmallBreakTime="updateSmallBreakTime"
-    @updateGoal="updateGoal"
-    @updatePomodoroTime="updatePomodoroTime"
-    @updateGradiantEnabled="updateGradiantEnabled"
+    @updatePomodoriByCycle="($event)=>pomodoriByCycle=$event"
+    @updateBigBreakTime="($event)=>breakTime.big.minutes=$event"
+    @updateSmallBreakTime="($event)=>breakTime.small.minutes=$event"
+    @updateGoal="($event)=>goal=$event"
+    @updatePomodoroTime="($event)=>pomodoroTime.minutes=$event"
+    @updateGradiantEnabled="($event)=>grandiantEnabled=$event"
     >
   </OptionsBlock>
 
@@ -176,44 +176,6 @@ export default {
       this.working = true
 
     },
-    updatePomodoriByCycle(operator){
-      if(operator ===  "+"){
-        this.pomodoriByCycle ++
-      }else{
-        this.pomodoriByCycle --
-      }
-    },
-    updateSmallBreakTime(operator){
-      if(operator ===  "+"){
-        this.breakTime.small.minutes ++
-      }else{
-        this.breakTime.small.minutes --
-      }
-    },
-    updateBigBreakTime(operator){
-      if(operator ===  "+"){
-        this.breakTime.big.minutes ++
-      }else{
-        this.breakTime.big.minutes --
-      }
-    },
-    updatePomodoroTime(operator){
-      if(operator ===  "+"){
-        this.pomodoroTime.minutes ++
-      }else{
-        this.pomodoroTime.minutes --
-      }
-    },
-    updateGoal(operator){
-      if(operator ===  "+"){
-        this.goal ++
-      }else{
-        this.goal --
-      }
-    },
-    updateGradiantEnabled(){
-      this.grandiantEnabled = !this.grandiantEnabled
-    }
   },
   mounted(){
     this.minutes = this.pomodoroTime.minutes

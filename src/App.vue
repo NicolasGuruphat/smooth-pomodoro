@@ -170,8 +170,9 @@ export default {
       this.working = !this.working
     },
     skipCurrentPomodoro() {
-      this.minutes = 0
-      this.seconds = 0
+      this.minutes = 0;
+      this.seconds = 0;
+      this.seconds--;
     },
     globalReset(){
       this.resetTimer();
@@ -258,7 +259,6 @@ export default {
 }
 .info-value{
   text-decoration: underline;
-  right: 0;
 }
 footer{
   position: fixed;

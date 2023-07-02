@@ -11,6 +11,9 @@
 - Time before big break
 - Time before goal
 - Split timer in another component
+- Time before end (goal)
+- ✔ Emoji square to represent the progression and the goal
+- Time since the beginning
 
 ## BUGS
 - changing pomodoro time has a direct impact on the gradiant 

@@ -1,7 +1,7 @@
 
 
 <template>
-  <div class="progress-bar-base" :style="progressBarGradiant">
+  <div class="progress-background-base" :style="progressBackgroundGradiant">
   <StatistiquesBlock class="stats-block"
     :pomodoroNumber="pomodoroNumber"
     :pomodoriByCycle="pomodoriByCycle"
@@ -26,7 +26,7 @@
     @updateAudioEnabled="($event)=>audioEnabled=$event"
     >
   </OptionsBlock>
-
+  
     <span class="timer" :class="{'working' : working, 'not-working' : !working}">{{ timer }}</span>
     <div>
       <ActionButton :action="startOrStop">{{ startOrStopLabel }}</ActionButton>
@@ -34,6 +34,13 @@
       <ActionButton :action="globalReset">RESET</ActionButton>
       <ActionButton :action="goBackToFirstPomodoro" :enabled="pomodoroNumber!=1 || !working">➔1<sup>st</sup></ActionButton>
     </div>
+    <ProgressBar
+      :goal="goal"
+      :totalPomodoro="totalPomodoro"
+      :pomodoriByCycle="pomodoriByCycle"
+    >
+
+    </ProgressBar>
     <footer>
         <div>SMOOTH POMODORO - by Nicolas Guruphat</div>  
       <a href="https://www.flaticon.com/authors/pixel-perfect" title="tomato icons">Tomato icons created by Pixel perfect - Flaticon</a>
@@ -47,13 +54,14 @@
 import ActionButton from './components/ActionButton.vue';
 import StatistiquesBlock from './components/StatistiquesBlock.vue';
 import OptionsBlock from './components/OptionsBlock.vue'
-
+import ProgressBar from './components/ProgressBar.vue';
 export default {
   name: 'App',
   components: {
     ActionButton, 
     StatistiquesBlock, 
-    OptionsBlock
+    OptionsBlock,
+    ProgressBar
   },
   data() {
     return {
@@ -93,7 +101,7 @@ export default {
       let secondsToDisplay = this.seconds < 10 ? "0" + this.seconds : this.seconds;
       return minutesToDisplay+":"+secondsToDisplay;
     },
-    progressBarGradiant(){
+    progressBackgroundGradiant(){
       if(this.grandiantEnabled){
         let baseTime = this.working ? this.pomodoroTime.minutes*60 + this.pomodoroTime.seconds : this.breakTime.small.minutes*60 + this.breakTime.small.seconds*60;
         let currentTime = baseTime-(this.minutes*60+this.seconds)
@@ -217,7 +225,7 @@ export default {
   font-weight: bold;
   /* -webkit-text-stroke: 1.5px var(--grey); */
 }
-.progress-bar-base{
+.progress-background-base{
   height: 100vh;
   width: 100vw;
   position: absolute;

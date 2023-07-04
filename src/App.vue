@@ -7,6 +7,9 @@
     :pomodoriByCycle="pomodoriByCycle"
     :totalPomodoro="totalPomodoro"
     :goal="goal"
+    :timer="timer"
+    :pomodoroTime="pomodoroTime"
+    :breakTime="breakTime"
   >
   </StatistiquesBlock>
   <OptionsBlock class="options-block"

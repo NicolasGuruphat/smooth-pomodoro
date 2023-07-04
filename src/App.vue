@@ -2,51 +2,33 @@
 
 <template>
   <div class="progress-background-base" :style="progressBackgroundGradiant">
-  <StatistiquesBlock class="stats-block"
-    :pomodoroNumber="pomodoroNumber"
-    :pomodoriByCycle="pomodoriByCycle"
-    :totalPomodoro="totalPomodoro"
-    :goal="goal"
-    :timer="timer"
-    :pomodoroTime="pomodoroTime"
-    :breakTime="breakTime"
-  >
-  </StatistiquesBlock>
-  <OptionsBlock class="options-block"
-    :pomodoriByCycle="pomodoriByCycle"
-    :totalPomodoro="totalPomodoro"
-    :pomodoroTime="pomodoroTime"
-    :breakTime="breakTime"
-    :goal="goal"
-    :grandiantEnabled="grandiantEnabled"
-    :audioEnabled="audioEnabled"
-    @updatePomodoriByCycle="($event)=>pomodoriByCycle=$event"
-    @updateBigBreakTime="($event)=>breakTime.big.minutes=$event"
-    @updateSmallBreakTime="($event)=>breakTime.small.minutes=$event"
-    @updateGoal="($event)=>goal=$event"
-    @updatePomodoroTime="($event)=>pomodoroTime.minutes=$event"
-    @updateGradiantEnabled="($event)=>grandiantEnabled=$event"
-    @updateAudioEnabled="($event)=>audioEnabled=$event"
-    >
-  </OptionsBlock>
-  
-    <span class="timer" :class="{'working' : working, 'not-working' : !working}">{{ timer }}</span>
+    <StatistiquesBlock class="stats-block" :pomodoroNumber="pomodoroNumber" :pomodoriByCycle="pomodoriByCycle"
+      :totalPomodoro="totalPomodoro" :goal="goal" :timer="timer" :pomodoroTime="pomodoroTime" :breakTime="breakTime">
+    </StatistiquesBlock>
+    <OptionsBlock class="options-block" :pomodoriByCycle="pomodoriByCycle" :totalPomodoro="totalPomodoro"
+      :pomodoroTime="pomodoroTime" :breakTime="breakTime" :goal="goal" :grandiantEnabled="grandiantEnabled"
+      :audioEnabled="audioEnabled" @updatePomodoriByCycle="($event) => pomodoriByCycle = $event"
+      @updateBigBreakTime="($event) => breakTime.big.minutes = $event"
+      @updateSmallBreakTime="($event) => breakTime.small.minutes = $event" @updateGoal="($event) => goal = $event"
+      @updatePomodoroTime="($event) => pomodoroTime.minutes = $event"
+      @updateGradiantEnabled="($event) => grandiantEnabled = $event" @updateAudioEnabled="($event) => audioEnabled = $event">
+    </OptionsBlock>
+
+    <span class="timer" :class="{ 'working': working, 'not-working': !working }">{{ timer }}</span>
     <div>
       <ActionButton :action="startOrStop">{{ startOrStopLabel }}</ActionButton>
       <ActionButton :action="skipCurrentPomodoro">SKIP</ActionButton>
       <ActionButton :action="globalReset">RESET</ActionButton>
-      <ActionButton :action="goBackToFirstPomodoro" :enabled="pomodoroNumber!=1 || !working">➔1<sup>st</sup></ActionButton>
+      <ActionButton :action="goBackToFirstPomodoro" :enabled="pomodoroNumber != 1 || !working">➔1<sup>st</sup>
+      </ActionButton>
     </div>
-    <ProgressBar
-      :goal="goal"
-      :totalPomodoro="totalPomodoro"
-      :pomodoriByCycle="pomodoriByCycle"
-    >
+    <ProgressBar :goal="goal" :totalPomodoro="totalPomodoro" :pomodoriByCycle="pomodoriByCycle">
 
     </ProgressBar>
     <footer>
-        <div>SMOOTH POMODORO - by Nicolas Guruphat</div>  
-      <a href="https://www.flaticon.com/authors/pixel-perfect" title="tomato icons">Tomato icons created by Pixel perfect - Flaticon</a>
+      <div>SMOOTH POMODORO - by Nicolas Guruphat</div>
+      <a href="https://www.flaticon.com/authors/pixel-perfect" title="tomato icons">Tomato icons created by Pixel perfect
+        - Flaticon</a>
       <br>
       <a href="https://freesound.org/people/InspectorJ/sounds/411575/">Sound effect by InspectorJ - Freesound</a>
     </footer>
@@ -61,114 +43,114 @@ import ProgressBar from './components/ProgressBar.vue';
 export default {
   name: 'App',
   components: {
-    ActionButton, 
-    StatistiquesBlock, 
+    ActionButton,
+    StatistiquesBlock,
     OptionsBlock,
     ProgressBar
   },
   data() {
     return {
-      pomodoroTime : {
-        minutes : 25,
-        seconds : 0
+      pomodoroTime: {
+        minutes: 25,
+        seconds: 0
       },
-      breakTime : {
-        small : {
-          minutes : 5,
-          seconds : 0
+      breakTime: {
+        small: {
+          minutes: 5,
+          seconds: 0
         },
-        big : {
-          minutes : 15,
-          seconds : 0
+        big: {
+          minutes: 15,
+          seconds: 0
         }
       },
-      grandiantEnabled : false,
-      audioEnabled : true,
-      pomodoriByCycle : 4,
-      seconds : null,
-      minutes : null,
-      startOrStopLabel : "STOP",
-      intervalId : null,
-      working : true,
-      progression : 0,
-      pomodoroNumber : 1, // between 1 and 4
-      totalPomodoro : 0,
-      goal : 0,
-      soundEffect : new Audio(require("./assets/gong_hit.wav"))
+      grandiantEnabled: false,
+      audioEnabled: true,
+      pomodoriByCycle: 4,
+      seconds: null,
+      minutes: null,
+      startOrStopLabel: "STOP",
+      intervalId: null,
+      working: true,
+      progression: 0,
+      pomodoroNumber: 1, // between 1 and 4
+      totalPomodoro: 0,
+      goal: 0,
+      soundEffect: new Audio(require("./assets/gong_hit.wav"))
     }
   },
-  computed:{
-    timer(){
+  computed: {
+    timer() {
       this.checkTime()
       let minutesToDisplay = this.minutes < 10 ? "0" + this.minutes : this.minutes;
       let secondsToDisplay = this.seconds < 10 ? "0" + this.seconds : this.seconds;
-      return minutesToDisplay+":"+secondsToDisplay;
+      return minutesToDisplay + ":" + secondsToDisplay;
     },
-    progressBackgroundGradiant(){
-      if(this.grandiantEnabled){
-        let baseTime = this.working ? this.pomodoroTime.minutes*60 + this.pomodoroTime.seconds : this.breakTime.small.minutes*60 + this.breakTime.small.seconds*60;
-        let currentTime = baseTime-(this.minutes*60+this.seconds)
-        let progression = ((currentTime/baseTime)-0.5)*100*2*-1
-        if(this.working){
+    progressBackgroundGradiant() {
+      if (this.grandiantEnabled) {
+        let baseTime = this.working ? this.pomodoroTime.minutes * 60 + this.pomodoroTime.seconds : this.breakTime.small.minutes * 60 + this.breakTime.small.seconds * 60;
+        let currentTime = baseTime - (this.minutes * 60 + this.seconds)
+        let progression = ((currentTime / baseTime) - 0.5) * 100 * 2 * -1
+        if (this.working) {
           return {
             "background": `linear-gradient(75deg, #ffb5aa ${progression}%, #aaffb6 100%)`
           };
-        }else{
-            return {
-              "background": "green"
-              // "background": `linear-gradient(75deg, rgba(255,0,0,1) 100%,  rgba(0,255,12,1) ${progression}%)`
-            };
+        } else {
+          return {
+            "background": "green"
+            // "background": `linear-gradient(75deg, rgba(255,0,0,1) 100%,  rgba(0,255,12,1) ${progression}%)`
+          };
         }
-      }else{
-          return {"background-color" : this.working ? "#ffb5aa" : "#aaffb6" };
+      } else {
+        return { "background-color": this.working ? "#ffb5aa" : "#aaffb6" };
       }
     }
   },
-  methods:{
+  methods: {
     startOrStop() {
-      if(this.startOrStopLabel === "STOP"){
+      if (this.startOrStopLabel === "STOP") {
         this.startOrStopLabel = "START"
         clearInterval(this.intervalId)
         this.intervalId = null
-      }else{
+      } else {
         this.startOrStopLabel = "STOP"
         this.startTimer()
       }
     },
     checkTime() {
-        if(this.seconds == -1){
-          this.seconds = 59
-          this.minutes --
-          if(this.minutes == -1){
-            this.switchSession()
-          }
+      if (this.seconds == -1) {
+        this.seconds = 59
+        this.minutes--
+        if (this.minutes == -1) {
+          this.switchSession()
         }
-      },
-    startTimer(){
+      }
+    },
+    startTimer() {
       this.intervalId = setInterval(() => {
-        this.seconds --;
+        this.seconds--;
       }, 1000)
     },
     switchSession() {
-      if(this.audioEnabled){
+      if (this.audioEnabled) {
         this.soundEffect.play()
       }
-      if(this.working){
+      if (this.working) {
         // switch to pause session
-        if(this.pomodoroNumber == this.pomodoriByCycle){
+        if (this.pomodoroNumber == this.pomodoriByCycle) {
           this.minutes = this.breakTime.big.minutes;
           this.seconds = this.breakTime.big.seconds;
-        }else{
+        } else {
           this.minutes = this.breakTime.small.minutes;
           this.seconds = this.breakTime.small.seconds;
         }
         this.totalPomodoro += 1
-      }else{
+      } else {
         // switch to work session
-        this.pomodoroNumber = (this.pomodoroNumber ) % this.pomodoriByCycle + 1
+        this.pomodoroNumber = (this.pomodoroNumber) % this.pomodoriByCycle + 1
         this.minutes = this.pomodoroTime.minutes
         this.seconds = this.pomodoroTime.seconds
-        
+
       }
       this.working = !this.working
     },
@@ -177,29 +159,29 @@ export default {
       this.seconds = 0;
       this.seconds--;
     },
-    globalReset(){
+    globalReset() {
       this.resetTimer();
       this.totalPomodoro = 0;
       this.pomodoroNumber = 1;
     },
-    goBackToFirstPomodoro(){
+    goBackToFirstPomodoro() {
       // go back to the first pomodoro of the current group of 
-      if(this.working){
-        this.totalPomodoro -= (this.pomodoroNumber-1)  
-      }else{
+      if (this.working) {
+        this.totalPomodoro -= (this.pomodoroNumber - 1)
+      } else {
         this.totalPomodoro -= this.pomodoroNumber
       }
       this.pomodoroNumber = 1
       this.resetTimer()
     },
-    resetTimer(){
+    resetTimer() {
       this.minutes = this.pomodoroTime.minutes
-      this.seconds = this.pomodoroTime.seconds 
+      this.seconds = this.pomodoroTime.seconds
       this.working = true
 
     },
   },
-  mounted(){
+  mounted() {
     this.minutes = this.pomodoroTime.minutes
     this.seconds = this.pomodoroTime.seconds
     this.startTimer()
@@ -210,67 +192,78 @@ export default {
 <style >
 :root {
   --grey: #2c3e50;
-  --white: rgb(252,252,252)
+  --white: rgb(252, 252, 252)
 }
+
 #app {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
 }
+
 .working {
-  color : #cc1b00
+  color: #cc1b00
 }
+
 .not-working {
-  color :  #00cc1b
+  color: #00cc1b
 }
+
 .timer {
   font-size: 10vh;
   font-weight: bold;
   /* -webkit-text-stroke: 1.5px var(--grey); */
 }
-.progress-background-base{
+
+.progress-background-base {
   height: 100vh;
   width: 100vw;
   position: absolute;
-  top:0;  
-  left:0;
+  top: 0;
+  left: 0;
   /* background: rgb(255,0,0) */
 }
-.stats-block{
+
+.stats-block {
   text-align: left;
   position: absolute;
   margin-top: 5px;
   margin-right: 5px;
   right: 0;
-  font-size: 20px; 
+  font-size: 20px;
   border: none;
   color: rgba(0, 0, 0, 0.8)
 }
-.options-block{
+
+.options-block {
   text-align: left;
   position: absolute;
   margin-top: 5px;
   margin-right: 5px;
   left: 5px;
-  font-size: 20px; 
+  font-size: 20px;
   border: none;
   color: rgba(0, 0, 0, 0.8)
 }
-.info-label{
-  float:left;
+
+.info-label {
+  float: left;
 }
-.info-value{
+
+.info-value {
   text-decoration: underline;
 }
-footer{
+
+footer {
   position: fixed;
   left: 0;
   bottom: 0;
   width: 100%;
   text-align: center;
 }
-a{
-  color:#00308F;
+
+a {
+  color: #00308F;
 }
 </style>

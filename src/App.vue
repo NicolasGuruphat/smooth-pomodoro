@@ -9,7 +9,7 @@
     :goal="goal"
   >
   </StatistiquesBlock>
-  <OptionsBlock class="option-block"
+  <OptionsBlock class="options-block"
     :pomodoriByCycle="pomodoriByCycle"
     :totalPomodoro="totalPomodoro"
     :pomodoroTime="pomodoroTime"
@@ -267,8 +267,7 @@ footer{
   width: 100%;
   text-align: center;
 }
-ul{
-  list-style: "⏱️";
-  margin:0;
+a{
+  color:#00308F;
 }
 </style>

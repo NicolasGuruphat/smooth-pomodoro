@@ -1,9 +1,9 @@
 <template>
-  <details class="options-block">
-    <summary>⚙️</summary>
+  <details>
+    <summary class="block-opener">⚙️</summary>
     <div>
       <div class="option">
-        <span class="info-label">🍅 Pomodori number by cycle : <span class="info-value">{{pomodoriByCycle}}</span></span> 
+        <span class="info-label">🍅 Number of pomodori by cycle : <span class="info-value">{{pomodoriByCycle}}</span></span> 
         <span class="stat-selector">
           <button class="stat-selector-button" :class="{'disabled':pomodoriByCycle==1, 'enabled-selector':pomodoriByCycle!=1, 'disabled-selector':pomodoriByCycle==1}" @click="$emit('updatePomodoriByCycle',pomodoriByCycle-1)" >-</button>
           <button class="stat-selector-button enabled-selector" @click="$emit('updatePomodoriByCycle',pomodoriByCycle+1)">+</button>
@@ -18,16 +18,16 @@
       </div>
       <div class="option">
         <span class="info-label">✨ Gradiant background</span>
-        <input type="checkbox" class="stat-selector stat-selector-button enabled-selector" v-model="grandiantEnabledOption">
+        <input type="checkbox" class="stat-selector stat-selector-button enabled-selector checkbox-selector" v-model="grandiantEnabledOption">
         <label for="checkbox"></label>
       </div>
       <div class="option">
         <span class="info-label">🔉 Sound effect</span>
-        <input type="checkbox" class="stat-selector stat-selector-button enabled-selector" v-model="audioEnabledOption">
+        <input type="checkbox" class="stat-selector stat-selector-button enabled-selector checkbox-selector" v-model="audioEnabledOption">
         <label for="checkbox"></label>
       </div>
       <details class="option">
-        <summary class="info-label">⏲️ Timer options (in minutes)</summary>
+        <summary class="info-label block-opener">⏲️ Timer options (in minutes)</summary>
         <br>
         <ul>
           <li>
@@ -118,5 +118,15 @@ export default {
 .enabled-selector{
   background-color: rgba(252,252,252,0.5);  
   color: rgba(0, 0, 0, 1 );
+}
+.checkbox-selector{
+  accent-color: rgba(252,252,252,0.5);
+}
+.block-opener:hover{
+  cursor: pointer;
+}
+ul{
+  list-style: "⏱️";
+  margin:0;
 }
 </style>

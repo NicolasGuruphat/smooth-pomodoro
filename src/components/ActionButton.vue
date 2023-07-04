@@ -16,7 +16,7 @@ export default {
 <style>
 .base-button {
   background-color: transparent;
-  border: 3px solid rgba(252,252,252,0.5);
+  border: 3px solid white;
   border-radius: 20px;
   font-weight: bold;
   padding: 10px;

@@ -69,7 +69,7 @@ export default {
       pomodoriByCycle: 4,
       seconds: null,
       minutes: null,
-      startOrStopLabel: "STOP",
+      startOrStopLabel: "START",
       intervalId: null,
       working: true,
       progression: 0,
@@ -184,8 +184,7 @@ export default {
   mounted() {
     this.minutes = this.pomodoroTime.minutes
     this.seconds = this.pomodoroTime.seconds
-    this.startTimer()
-  }
+  } 
 }
 </script>
 

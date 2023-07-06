@@ -20,13 +20,10 @@
         </template>
     </template>
 </template>
-<script>
-export default {
-    props: {
-        goal: Number,
-        totalPomodoro: Number,
-        pomodoriByCycle: Number
-    }
-}
+<script setup>
+import { defineProps } from 'vue';
+
+defineProps(['goal','totalPomodoro', 'pomodoriByCycle']);
+
 </script>
 <style></style>

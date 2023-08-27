@@ -11,7 +11,8 @@
       @updateBigBreakTime="($event) => breakTime.big.minutes = $event"
       @updateSmallBreakTime="($event) => breakTime.small.minutes = $event" @updateGoal="($event) => goal = $event"
       @updatePomodoroTime="($event) => pomodoroTime.minutes = $event"
-      @updateGradiantEnabled="($event) => grandiantEnabled = $event" @updateAudioEnabled="($event) => audioEnabled = $event">
+      @updateGradiantEnabled="($event) => grandiantEnabled = $event"
+      @updateAudioEnabled="($event) => audioEnabled = $event">
     </OptionsBlock>
 
     <span class="timer" :class="{ 'working': working, 'not-working': !working }">{{ timer }}</span>
@@ -26,7 +27,7 @@
 
     </ProgressBar>
     <footer>
-      <div>SMOOTH POMODORO - by Nicolas Guruphat</div>
+      <div>Smooth Pomodoro - by Nicolas Guruphat</div>
       <a href="https://www.flaticon.com/authors/pixel-perfect" title="tomato icons">Tomato icons created by Pixel perfect
         - Flaticon</a>
       <br>
@@ -35,160 +36,138 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import ActionButton from './components/ActionButton.vue';
 import StatistiquesBlock from './components/StatistiquesBlock.vue';
 import OptionsBlock from './components/OptionsBlock.vue'
 import ProgressBar from './components/ProgressBar.vue';
-export default {
-  name: 'App',
-  components: {
-    ActionButton,
-    StatistiquesBlock,
-    OptionsBlock,
-    ProgressBar
-  },
-  data() {
-    return {
-      pomodoroTime: {
-        minutes: 25,
-        seconds: 0
-      },
-      breakTime: {
-        small: {
-          minutes: 5,
-          seconds: 0
-        },
-        big: {
-          minutes: 15,
-          seconds: 0
-        }
-      },
-      grandiantEnabled: false,
-      audioEnabled: true,
-      pomodoriByCycle: 4,
-      seconds: null,
-      minutes: null,
-      startOrStopLabel: "START",
-      intervalId: null,
-      working: true,
-      progression: 0,
-      pomodoroNumber: 1, // between 1 and 4
-      totalPomodoro: 0,
-      goal: 0,
-      soundEffect: new Audio(require("./assets/gong_hit.wav"))
-    }
-  },
-  computed: {
-    timer() {
-      this.checkTime()
-      let minutesToDisplay = this.minutes < 10 ? "0" + this.minutes : this.minutes;
-      let secondsToDisplay = this.seconds < 10 ? "0" + this.seconds : this.seconds;
-      return minutesToDisplay + ":" + secondsToDisplay;
-    },
-    progressBackgroundGradiant() {
-      if (this.grandiantEnabled) {
-        let baseTime = this.working ? this.pomodoroTime.minutes * 60 + this.pomodoroTime.seconds : this.breakTime.small.minutes * 60 + this.breakTime.small.seconds * 60;
-        let currentTime = baseTime - (this.minutes * 60 + this.seconds)
-        let progression = ((currentTime / baseTime) - 0.5) * 100 * 2 * -1
-        if (this.working) {
-          return {
-            "background": `linear-gradient(75deg, #ffb5aa ${progression}%, #aaffb6 100%)`
-          };
-        } else {
-          return {
-            "background": "green"
-            // "background": `linear-gradient(75deg, rgba(255,0,0,1) 100%,  rgba(0,255,12,1) ${progression}%)`
-          };
-        }
-      } else {
-        return { "background-color": this.working ? "#ffb5aa" : "#aaffb6" };
-      }
-    }
-  },
-  methods: {
-    startOrStop() {
-      if (this.startOrStopLabel === "STOP") {
-        this.startOrStopLabel = "START"
-        clearInterval(this.intervalId)
-        this.intervalId = null
-      } else {
-        this.startOrStopLabel = "STOP"
-        this.startTimer()
-      }
-    },
-    checkTime() {
-      if (this.seconds == -1) {
-        this.seconds = 59
-        this.minutes--
-        if (this.minutes == -1) {
-          this.switchSession()
-        }
-      }
-    },
-    startTimer() {
-      this.intervalId = setInterval(() => {
-        this.seconds--;
-      }, 1000)
-    },
-    switchSession() {
-      if (this.audioEnabled) {
-        this.soundEffect.play()
-      }
-      if (this.working) {
-        // switch to pause session
-        if (this.pomodoroNumber == this.pomodoriByCycle) {
-          this.minutes = this.breakTime.big.minutes;
-          this.seconds = this.breakTime.big.seconds;
-        } else {
-          this.minutes = this.breakTime.small.minutes;
-          this.seconds = this.breakTime.small.seconds;
-        }
-        this.totalPomodoro += 1
-      } else {
-        // switch to work session
-        this.pomodoroNumber = (this.pomodoroNumber) % this.pomodoriByCycle + 1
-        this.minutes = this.pomodoroTime.minutes
-        this.seconds = this.pomodoroTime.seconds
+import { ref, reactive, computed } from 'vue';
+import { onMounted } from 'vue';
 
-      }
-      this.working = !this.working
-    },
-    skipCurrentPomodoro() {
-      this.minutes = 0;
-      this.seconds = 0;
-      this.seconds--;
-    },
-    globalReset() {
-      this.resetTimer();
-      this.totalPomodoro = 0;
-      this.pomodoroNumber = 1;
-    },
-    goBackToFirstPomodoro() {
-      // go back to the first pomodoro of the current group of 
-      if (this.working) {
-        this.totalPomodoro -= (this.pomodoroNumber - 1)
-      } else {
-        this.totalPomodoro -= this.pomodoroNumber
-      }
-      this.pomodoroNumber = 1
-      this.resetTimer()
-    },
-    resetTimer() {
-      this.minutes = this.pomodoroTime.minutes
-      this.seconds = this.pomodoroTime.seconds
-      this.working = true
+let pomodoroTime = reactive({ minutes: 25, seconds: 0 });
+let breakTime = reactive({ small: { minutes: 5, seconds: 0 }, big: { minutes: 15, seconds: 0 } });
+let grandiantEnabled = ref(false);
+let audioEnabled = ref(true);
+let pomodoriByCycle = ref(4);
+let seconds = ref(null);
+let minutes = ref(null);
+let startOrStopLabel = ref("START");
+let intervalId = ref(null);
+let working = ref(true);
+//let progression = ref(0);
+let pomodoroNumber = ref(1); // between 1 and 4
+let totalPomodoro = ref(0);
+let goal = ref(0);
+let soundEffect = ref(new Audio(require("./assets/gong_hit.wav")));
+onMounted(() => {
+  minutes.value = pomodoroTime.minutes;
+  seconds.value = pomodoroTime.seconds;
+});
 
-    },
-  },
-  mounted() {
-    this.minutes = this.pomodoroTime.minutes
-    this.seconds = this.pomodoroTime.seconds
-  } 
+const timer = computed(() => {
+  checkTime();
+  let minutesToDisplay = minutes.value < 10 ? "0" + minutes.value : minutes.value;
+  let secondsToDisplay = seconds.value < 10 ? "0" + seconds.value : seconds.value;
+  return minutesToDisplay + ":" + secondsToDisplay;
+})
+const progressBackgroundGradiant = computed(() => {
+  if (grandiantEnabled.value) {
+    let baseTime = working.value ? pomodoroTime.minutes * 60 + pomodoroTime.seconds : breakTime.small.minutes * 60 + breakTime.small.seconds * 60;
+    let currentTime = baseTime - (minutes.value * 60 + seconds.value)
+    let progression = ((currentTime / baseTime) - 0.5) * 100 * 2 * -1
+    if (working.value) {
+      return {
+        "background": `linear-gradient(75deg, #ffb5aa ${progression}%, #aaffb6 100%)`
+      };
+    } else {
+      return {
+        "background": "green"
+        // "background": `linear-gradient(75deg, rgba(255,0,0,1) 100%,  rgba(0,255,12,1) ${progression}%)`
+      };
+    }
+  } else {
+    return { "background-color": working.value ? "#ffb5aa" : "#aaffb6" };
+  }
+})
+function startOrStop() {
+  if (startOrStopLabel.value === "STOP") {
+    startOrStopLabel.value = "START"
+    clearInterval(intervalId.value)
+    intervalId.value = null
+  } else {
+    startOrStopLabel.value = "STOP"
+    startTimer()
+  }
+}
+function checkTime() {
+  if (seconds.value == -1) {
+    seconds.value = 59
+    minutes.value--
+    if (minutes.value == -1) {
+      switchSession()
+    }
+  }
+}
+function startTimer() {
+  intervalId.value = setInterval(() => {
+    seconds.value--;
+  }, 1000)
+}
+function switchSession() {
+  if (audioEnabled.value) {
+    soundEffect.value.play()
+  }
+  if (working.value) {
+    // switch to pause session
+    if (pomodoroNumber.value == pomodoriByCycle.value) {
+      minutes.value = breakTime.big.minutes;
+      seconds.value = breakTime.big.seconds;
+    } else {
+      minutes.value = breakTime.small.minutes;
+      seconds.value = breakTime.small.seconds;
+    }
+    totalPomodoro.value += 1
+  } else {
+    // switch to work session
+    pomodoroNumber.value = (pomodoroNumber.value) % pomodoriByCycle.value + 1
+    minutes.value = pomodoroTime.minutes
+    seconds.value = pomodoroTime.seconds
+
+  }
+  working.value = !working.value
+}
+function skipCurrentPomodoro() {
+  minutes.value = 0;
+  seconds.value = 0;
+  seconds.value--;
+}
+
+function globalReset() {
+  resetTimer();
+  totalPomodoro.value = 0;
+  pomodoroNumber.value = 1;
+}
+
+function goBackToFirstPomodoro() {
+  // go back to the first pomodoro of the current group of 
+  if (working.value) {
+    totalPomodoro.value -= (pomodoroNumber.value - 1)
+  } else {
+    totalPomodoro.value -= pomodoroNumber.value
+  }
+  pomodoroNumber.value = 1
+  resetTimer()
+}
+
+function resetTimer() {
+  minutes.value = pomodoroTime.minutes
+  seconds.value = pomodoroTime.seconds
+  working.value = true
+
 }
 </script>
 
-<style >
+<style>
 :root {
   --grey: #2c3e50;
   --white: rgb(252, 252, 252)

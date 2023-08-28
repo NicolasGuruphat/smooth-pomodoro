@@ -1,5 +1,5 @@
 import ActionButton from '@/components/ActionButton'
-import { mount } from '@vue/test-utils'
+import { shallowMount, mount } from '@vue/test-utils'
 
 describe('Action Button', () => {
     it('Props are assigned properly', () => {

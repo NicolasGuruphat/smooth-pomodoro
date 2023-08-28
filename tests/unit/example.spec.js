@@ -34,23 +34,55 @@ describe('Action Button', () => {
   })
 })
 describe('Progress Bar', () => {
-  it('Display correctly the progression', () => {
+  it('Display correctly the progression bar icons', () => {
     let wrapper = mount(ProgressBar, {
       props: {
-        goal: 0, 
-        totalPomodoro: 0, 
+        goal: 0,
+        totalPomodoriDone: 0,
         pomodoriByCycle: 0
       }
     });
     expect(wrapper.text()).toEqual("")
-    /*wrapper = mount(ProgressBar, {
+    wrapper = mount(ProgressBar, {
       props: {
-        goal: 4, 
-        totalPomodoro: 0, 
+        goal: 4,
+        totalPomodoriDone: 0,
         pomodoriByCycle: 4
       }
     });
-    expect(wrapper.text()).toEqual("⭕  🟨  🟨  🟨")*/
+    expect(wrapper.text()).toEqual("⭕  🟥  🟥  🟥");
+    wrapper = mount(ProgressBar, {
+      props: {
+        goal: 5,
+        totalPomodoriDone: 0,
+        pomodoriByCycle: 4
+      }
+    });
+    expect(wrapper.text()).toEqual("⭕  🟥  🟥  🟥  🟨  🟥");
+    wrapper = mount(ProgressBar, {
+      props: {
+        goal: 5,
+        totalPomodoriDone: 1,
+        pomodoriByCycle: 4
+      }
+    });
+    expect(wrapper.text()).toEqual("🟩  ⭕  🟥  🟥  🟨  🟥");
+    wrapper = mount(ProgressBar, {
+      props: {
+        goal: 4,
+        totalPomodoriDone: 4,
+        pomodoriByCycle: 4
+      }
+    });
+    expect(wrapper.text()).toEqual("🟩  🟩  🟩  🟩  🟩");
+    wrapper = mount(ProgressBar, {
+      props: {
+        goal: 7,
+        totalPomodoriDone: 5,
+        pomodoriByCycle: 4
+      }
+    });
+    expect(wrapper.text()).toEqual("🟩  🟩  🟩  🟩  🟨  🟩  ⭕  🟥");
   })
 })
 

@@ -8,7 +8,7 @@
                 🍅
             </span>
             <span class="info-value">
-                {{ pomodoroNumber }} / {{ pomodoriByCycle }}
+                {{ currentPomoroNumber }} / {{ pomodoriByCycle }}
             </span>
         </div>
 
@@ -17,7 +17,7 @@
                 {{ }}
             </span>
             <span class="info-value">
-                {{ totalPomodoro }}
+                {{ totalPomodoriDone }}
                 <template v-if="goal != 0">/ {{ goal }}
                 </template>
             </span>
@@ -31,9 +31,9 @@
 export default {
     props: {
         goal: Number,
-        pomodoroNumber: Number,
+        currentPomoroNumber: Number,
         pomodoriByCycle: Number,
-        totalPomodoro: Number,
+        totalPomodoriDone: Number,
         pomodoroTime: Object,
         breakTime: Object,
         timer: String

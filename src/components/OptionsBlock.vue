@@ -74,7 +74,7 @@ export default {
     props:{
         goal: Number,
         pomodoriByCycle: Number,
-        totalPomodoro: Number,
+        totalPomodoriDone: Number,
         pomodoroTime: Object,
         breakTime: Object,
         grandiantEnabled: Boolean,

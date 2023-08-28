@@ -8,19 +8,23 @@ describe('Goal statistiques', () => {
 
     const wrapper = mount(StatistiquesBlock, {
       props: {
-        totalPomodoriDone: 0,
+        totalPomodoriDone: 0, 
+        currentPomoroNumber: 0,
+        pomodoriByCycle: 4,
         goal: 0
       }
     });
-    expect(goalPart(wrapper)).toBe("");
+    expect(wrapper.vm.goalStat).toBe("0 / ");
   })
   it('display goal when there is a goal set', () => {
     const wrapper = mount(StatistiquesBlock, {
       props: {
         totalPomodoriDone: 0, 
+        currentPomoroNumber: 1,
+        pomodoriByCycle: 4,
         goal: 1
       }
     });
-    expect(goalPart(wrapper)).toBe(" /1");
+    expect(wrapper.vm.goalStat).toBe("0 / 1");
   })
 })

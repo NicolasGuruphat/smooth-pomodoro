@@ -19,7 +19,6 @@ describe('Action Button', () => {
       const action = wrapper.props('action');
       expect(action).toBe(testFunction);
       expect(action()).toBe("test");
-      console.log(wrapper.html())
     })
     it('html is correct', () => {
       const slot = "<div>test</div>";

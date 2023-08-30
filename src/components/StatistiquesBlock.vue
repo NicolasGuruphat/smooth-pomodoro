@@ -8,7 +8,7 @@
                 🍅
             </span>
             <span class="info-value">
-                {{ currentPomoroNumber }} / {{ pomodoriByCycle }}
+                {{ cycleStat }}
             </span>
         </div>
 
@@ -70,9 +70,11 @@ export default {
             return seconds / 60;
         },
         goalStat(){
-            return this.totalPomodoriDone + " / " + (this.goal != 0 ? this.goal : "");
+            return this.totalPomodoriDone + (this.goal != 0 ? " / " +  this.goal : "");
+        },
+        cycleStat(){
+            return this.currentPomoroNumber + " / " + this.pomodoriByCycle
         }
-
     }
 }
 </script>

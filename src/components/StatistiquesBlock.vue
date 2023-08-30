@@ -63,9 +63,9 @@ export default {
             return null
         },
         timeBeforeGoal() {
-            console.log(Math.floor(this.goal / this.pomodoriByCycle))
+            // console.log(Math.floor(this.goal / this.pomodoriByCycle))
             let timerSeconds = parseInt(this.timer.slice(0, 2) * 60) + parseInt(this.timer.slice(-2));
-            console.log(timerSeconds);
+            // console.log(timerSeconds);
             let seconds = timerSeconds + (this.goal - 1) * (this.pomodoroTime.minutes * 60 + this.pomodoroTime.seconds) + (this.goal - 1) * (this.breakTime.small.minutes * 60 + this.breakTime.small.seconds) + (Math.floor(this.goal / this.pomodoriByCycle)) * (this.breakTime.big.minutes * 60 + this.breakTime.big.seconds)
             return seconds / 60;
         },

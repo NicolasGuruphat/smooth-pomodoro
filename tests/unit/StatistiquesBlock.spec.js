@@ -52,7 +52,6 @@ describe('Cycle statistique', () => {
         goal: 0
       }
     });
-    console.log(cyclePart(wrapper));
     expect(wrapper.vm.cycleStat).toBe("1 / 4");
     expect(cyclePart(wrapper)).toBe(" 1 / 4 ");
   });

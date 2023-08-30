@@ -2,10 +2,10 @@
 
 <template>
   <div class="progress-background-base" :style="progressBackgroundGradiant">
-    <StatistiquesBlock class="stats-block" :pomodoroNumber="pomodoroNumber" :pomodoriByCycle="pomodoriByCycle"
-      :totalPomodoro="totalPomodoro" :goal="goal" :timer="timer" :pomodoroTime="pomodoroTime" :breakTime="breakTime">
+    <StatistiquesBlock class="stats-block" :currentPomoroNumber="currentPomoroNumber" :pomodoriByCycle="pomodoriByCycle"
+      :totalPomodoriDone="totalPomodoriDone" :goal="goal" :timer="timer" :pomodoroTime="pomodoroTime" :breakTime="breakTime">
     </StatistiquesBlock>
-    <OptionsBlock class="options-block" :pomodoriByCycle="pomodoriByCycle" :totalPomodoro="totalPomodoro"
+    <OptionsBlock class="options-block" :pomodoriByCycle="pomodoriByCycle" :totalPomodoriDone="totalPomodoriDone"
       :pomodoroTime="pomodoroTime" :breakTime="breakTime" :goal="goal" :grandiantEnabled="grandiantEnabled"
       :audioEnabled="audioEnabled" @updatePomodoriByCycle="($event) => pomodoriByCycle = $event"
       @updateBigBreakTime="($event) => breakTime.big.minutes = $event"
@@ -20,10 +20,10 @@
       <ActionButton :action="startOrStop">{{ startOrStopLabel }}</ActionButton>
       <ActionButton :action="skipCurrentPomodoro">SKIP</ActionButton>
       <ActionButton :action="globalReset">RESET</ActionButton>
-      <ActionButton :action="goBackToFirstPomodoro" :enabled="pomodoroNumber != 1 || !working">➔1<sup>st</sup>
+      <ActionButton :action="goBackToFirstPomodoro" :enabled="currentPomoroNumber != 1 || !working">➔1<sup>st</sup>
       </ActionButton>
     </div>
-    <ProgressBar :goal="goal" :totalPomodoro="totalPomodoro" :pomodoriByCycle="pomodoriByCycle">
+    <ProgressBar :goal="goal" :totalPomodoriDone="totalPomodoriDone" :pomodoriByCycle="pomodoriByCycle">
 
     </ProgressBar>
     <footer>
@@ -55,8 +55,8 @@ let startOrStopLabel = ref("START");
 let intervalId = ref(null);
 let working = ref(true);
 //let progression = ref(0);
-let pomodoroNumber = ref(1); // between 1 and 4
-let totalPomodoro = ref(0);
+let currentPomoroNumber = ref(1); // between 1 and 4
+let totalPomodoriDone = ref(0);
 let goal = ref(0);
 let soundEffect = ref(new Audio(require("./assets/gong_hit.wav")));
 onMounted(() => {
@@ -119,17 +119,17 @@ function switchSession() {
   }
   if (working.value) {
     // switch to pause session
-    if (pomodoroNumber.value == pomodoriByCycle.value) {
+    if (currentPomoroNumber.value == pomodoriByCycle.value) {
       minutes.value = breakTime.big.minutes;
       seconds.value = breakTime.big.seconds;
     } else {
       minutes.value = breakTime.small.minutes;
       seconds.value = breakTime.small.seconds;
     }
-    totalPomodoro.value += 1
+    totalPomodoriDone.value += 1
   } else {
     // switch to work session
-    pomodoroNumber.value = (pomodoroNumber.value) % pomodoriByCycle.value + 1
+    currentPomoroNumber.value = (currentPomoroNumber.value) % pomodoriByCycle.value + 1
     minutes.value = pomodoroTime.minutes
     seconds.value = pomodoroTime.seconds
 
@@ -144,18 +144,18 @@ function skipCurrentPomodoro() {
 
 function globalReset() {
   resetTimer();
-  totalPomodoro.value = 0;
-  pomodoroNumber.value = 1;
+  totalPomodoriDone.value = 0;
+  currentPomoroNumber.value = 1;
 }
 
 function goBackToFirstPomodoro() {
   // go back to the first pomodoro of the current group of 
   if (working.value) {
-    totalPomodoro.value -= (pomodoroNumber.value - 1)
+    totalPomodoriDone.value -= (currentPomoroNumber.value - 1)
   } else {
-    totalPomodoro.value -= pomodoroNumber.value
+    totalPomodoriDone.value -= currentPomoroNumber.value
   }
-  pomodoroNumber.value = 1
+  currentPomoroNumber.value = 1
   resetTimer()
 }
 

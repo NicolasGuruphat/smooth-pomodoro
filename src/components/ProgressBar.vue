@@ -22,10 +22,10 @@
         </template>
     </template>
 </template>
-<script setup>
-import { defineProps } from 'vue';
+<script setup lang="ts">
+import { defineProps } from 'vue'
 
-defineProps(['goal','totalPomodoriDone', 'pomodoriByCycle']);
+defineProps(['goal', 'totalPomodoriDone', 'pomodoriByCycle'])
 
 </script>
 <style></style>

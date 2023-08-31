@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import StatistiquesBlock from '@/components/StatistiquesBlock'
 import { mount } from '@vue/test-utils'
 

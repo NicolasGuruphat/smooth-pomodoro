@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import ActionButton from '@/components/ActionButton'
 import { shallowMount, mount } from '@vue/test-utils'
 

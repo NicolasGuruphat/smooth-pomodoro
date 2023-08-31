@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 // import App from '@/App.vue'
 // import { shallowMount } from '@vue/test-utils'
 

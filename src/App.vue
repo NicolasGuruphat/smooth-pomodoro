@@ -87,7 +87,7 @@ const progressBackgroundGradiant = computed(() => {
     return { 'background-color': working.value ? '#ffb5aa' : '#aaffb6' }
   }
 })
-function startOrStop () {
+function startOrStop () : void {
   if (startOrStopLabel.value === 'STOP') {
     startOrStopLabel.value = 'START'
     if (intervalId.value !== null) {
@@ -99,7 +99,7 @@ function startOrStop () {
     startTimer()
   }
 }
-function checkTime () {
+function checkTime () : void {
   if (seconds.value === -1) {
     seconds.value = 59
     minutes.value--
@@ -108,12 +108,12 @@ function checkTime () {
     }
   }
 }
-function startTimer () {
+function startTimer () : void {
   intervalId.value = setInterval(() => {
     seconds.value--
   }, 1000)
 }
-function switchSession () {
+function switchSession () : void {
   if (audioEnabled.value) {
     soundEffect.value.play()
   }
@@ -135,19 +135,19 @@ function switchSession () {
   }
   working.value = !working.value
 }
-function skipCurrentPomodoro () {
+function skipCurrentPomodoro () : void {
   minutes.value = 0
   seconds.value = 0
   seconds.value--
 }
 
-function globalReset () {
+function globalReset () : void {
   resetTimer()
   totalPomodoriDone.value = 0
   currentPomodoroNumber.value = 1
 }
 
-function goBackToFirstPomodoro () {
+function goBackToFirstPomodoro () : void {
   // go back to the first pomodoro of the current group of
   if (working.value) {
     totalPomodoriDone.value -= (currentPomodoroNumber.value - 1)
@@ -158,7 +158,7 @@ function goBackToFirstPomodoro () {
   resetTimer()
 }
 
-function resetTimer () {
+function resetTimer () : void {
   minutes.value = pomodoroTime.minutes
   seconds.value = pomodoroTime.seconds
   working.value = true

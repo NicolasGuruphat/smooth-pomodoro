@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import ProgressBar from '@/components/ProgressBar'
 import { mount } from '@vue/test-utils'
 

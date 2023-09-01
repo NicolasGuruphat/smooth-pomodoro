@@ -13,11 +13,11 @@
       @updateAudioEnabled="($event: boolean) => audioEnabled = $event">
     </OptionsBlock>
 
-    <span class="timer" :class="{ 'working': working, 'not-working': !working }">{{ timer }}</span>
+    <span id="timer" :class="{ 'working': working, 'not-working': !working }">{{ timer }}</span>
     <div>
-      <ActionButton :action="startOrStop">{{ startOrStopLabel }}</ActionButton>
-      <ActionButton :action="skipCurrentPomodoro">SKIP</ActionButton>
-      <ActionButton :action="globalReset">RESET</ActionButton>
+      <ActionButton id="start-stop-button" :action="startOrStop">{{ startOrStopLabel }}</ActionButton>
+      <ActionButton id="skip-button" :action="skipCurrentPomodoro">SKIP</ActionButton>
+      <ActionButton id="reset-button" :action="globalReset">RESET</ActionButton>
       <ActionButton :action="goBackToFirstPomodoro" :enabled="currentPomodoroNumber != 1 || !working">➔1<sup>st</sup>
       </ActionButton>
     </div>
@@ -40,53 +40,21 @@ import ActionButton from './components/ActionButton.vue'
 import StatistiquesBlock from './components/StatistiquesBlock.vue'
 import OptionsBlock from './components/OptionsBlock.vue'
 import ProgressBar from './components/ProgressBar.vue'
-import { ref, reactive, computed, onMounted } from 'vue'
-const pomodoroTime = reactive({ minutes: 25, seconds: 0 })
-const breakTime = reactive({ small: { minutes: 5, seconds: 0 }, big: { minutes: 15, seconds: 0 } })
-const grandiantEnabled = ref<boolean>(false)
-const audioEnabled = ref<boolean>(true)
-const pomodoriByCycle = ref<number>(4)
-const seconds = ref<number>(0)
-const minutes = ref<number>(0)
-const startOrStopLabel = ref<string>('START')
-const intervalId = ref<number | null>(null)
-const working = ref<boolean>(true)
-// let progression = ref(0);
-const currentPomodoroNumber = ref<number>(1)
-const totalPomodoriDone = ref<number>(0)
-const goal = ref<number>(0)
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const soundEffect = ref<HTMLAudioElement>(new Audio(require('./assets/gong_hit.wav')))
-onMounted(() => {
-  minutes.value = pomodoroTime.minutes
-  seconds.value = pomodoroTime.seconds
-})
+import { ref, reactive, computed } from 'vue'
 
-const timer = computed(() => {
-  checkTime()
-  const minutesToDisplay : string = minutes.value < 10 ? '0' + minutes.value : minutes.value.toString()
-  const secondsToDisplay : string = seconds.value < 10 ? '0' + seconds.value : seconds.value.toString()
-  return minutesToDisplay + ':' + secondsToDisplay
-})
-const progressBackgroundGradiant = computed(() => {
-  if (grandiantEnabled.value) {
-    const baseTime : number = working.value ? pomodoroTime.minutes * 60 + pomodoroTime.seconds : breakTime.small.minutes * 60 + breakTime.small.seconds * 60
-    const currentTime : number = baseTime - (minutes.value * 60 + seconds.value)
-    const progression : number = ((currentTime / baseTime) - 0.5) * 100 * 2 * -1
-    if (working.value) {
-      return {
-        background: `linear-gradient(75deg, #ffb5aa ${progression}%, #aaffb6 100%)`
-      }
-    } else {
-      return {
-        background: 'green'
-        // "background": `linear-gradient(75deg, rgba(255,0,0,1) 100%,  rgba(0,255,12,1) ${progression}%)`
-      }
-    }
-  } else {
-    return { 'background-color': working.value ? '#ffb5aa' : '#aaffb6' }
-  }
-})
+// onMounted(() => {
+//   minutes.value = pomodoroTime.minutes
+//   seconds.value = pomodoroTime.seconds
+// })
+
+const intervalId = ref<number | null>(null)
+function startTimer () : void {
+  intervalId.value = setInterval(() => {
+    seconds.value--
+  }, 1000)
+}
+
+const startOrStopLabel = ref<string>('START')
 function startOrStop () : void {
   if (startOrStopLabel.value === 'STOP') {
     startOrStopLabel.value = 'START'
@@ -99,20 +67,13 @@ function startOrStop () : void {
     startTimer()
   }
 }
-function checkTime () : void {
-  if (seconds.value === -1) {
-    seconds.value = 59
-    minutes.value--
-    if (minutes.value === -1) {
-      switchSession()
-    }
-  }
-}
-function startTimer () : void {
-  intervalId.value = setInterval(() => {
-    seconds.value--
-  }, 1000)
-}
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const soundEffect = ref(new Audio(require('./assets/gong_hit.wav')))
+const audioEnabled = ref<boolean>(true)
+const working = ref<boolean>(true)
+const pomodoriByCycle = ref<number>(4)
+const currentPomodoroNumber = ref<number>(1)
 function switchSession () : void {
   if (audioEnabled.value) {
     soundEffect.value.play()
@@ -135,6 +96,55 @@ function switchSession () : void {
   }
   working.value = !working.value
 }
+
+const grandiantEnabled = ref<boolean>(false)
+const progressBackgroundGradiant = computed(() => {
+  if (grandiantEnabled.value) {
+    const baseTime : number = working.value ? pomodoroTime.minutes * 60 + pomodoroTime.seconds : breakTime.small.minutes * 60 + breakTime.small.seconds * 60
+    const currentTime : number = baseTime - (minutes.value * 60 + seconds.value)
+    const progression : number = ((currentTime / baseTime) - 0.5) * 100 * 2 * -1
+    if (working.value) {
+      return {
+        background: `linear-gradient(75deg, #ffb5aa ${progression}%, #aaffb6 100%)`
+      }
+    } else {
+      return {
+        background: 'green'
+        // "background": `linear-gradient(75deg, rgba(255,0,0,1) 100%,  rgba(0,255,12,1) ${progression}%)`
+      }
+    }
+  } else {
+    return { 'background-color': working.value ? '#ffb5aa' : '#aaffb6' }
+  }
+})
+
+const pomodoroTime = reactive({ minutes: 25, seconds: 0 })
+const breakTime = reactive({ small: { minutes: 5, seconds: 0 }, big: { minutes: 15, seconds: 0 } })
+
+const minutes = ref<number>(pomodoroTime.minutes)
+const seconds = ref<number>(pomodoroTime.seconds)
+
+// let progression = ref(0);
+const totalPomodoriDone = ref<number>(0)
+const goal = ref<number>(0)
+
+const timer = computed(() => {
+  checkTime()
+  const minutesToDisplay : string = minutes.value < 10 ? '0' + minutes.value : minutes.value.toString()
+  const secondsToDisplay : string = seconds.value < 10 ? '0' + seconds.value : seconds.value.toString()
+  return minutesToDisplay + ':' + secondsToDisplay
+})
+
+function checkTime () : void {
+  if (seconds.value === -1) {
+    seconds.value = 59
+    minutes.value--
+    if (minutes.value === -1) {
+      switchSession()
+    }
+  }
+}
+
 function skipCurrentPomodoro () : void {
   minutes.value = 0
   seconds.value = 0
@@ -186,7 +196,7 @@ function resetTimer () : void {
   color: #00cc1b
 }
 
-.timer {
+#timer {
   font-size: 10vh;
   font-weight: bold;
   /* -webkit-text-stroke: 1.5px var(--grey); */

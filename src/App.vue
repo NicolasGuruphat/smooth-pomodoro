@@ -17,7 +17,7 @@
     <div>
       <ActionButton id="start-stop-button" :action="startOrStop">{{ startOrStopLabel }}</ActionButton>
       <ActionButton id="skip-button" :action="skipCurrentPomodoro">SKIP</ActionButton>
-      <ActionButton :action="globalReset">RESET</ActionButton>
+      <ActionButton id="reset-button" :action="globalReset">RESET</ActionButton>
       <ActionButton :action="goBackToFirstPomodoro" :enabled="currentPomodoroNumber != 1 || !working">➔1<sup>st</sup>
       </ActionButton>
     </div>

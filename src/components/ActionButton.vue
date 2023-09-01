@@ -1,16 +1,19 @@
 <template>
     <div>
-        <button :disabled="!enabled" class="base-button" @click="action">
+        <button :disabled="!enabled" class="base-button" @click="action()">
             <slot></slot>
         </button>
     </div>
 </template>
-<script>
+<script lang="ts">
 export default {
-    props: {
-        action: Function,
-        enabled: { default: true }
-    }
+  props: {
+    action: {
+      required: true,
+      type: Function
+    },
+    enabled: { default: true }
+  }
 }
 </script>
 <style>

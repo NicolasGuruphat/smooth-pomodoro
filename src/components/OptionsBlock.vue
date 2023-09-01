@@ -3,12 +3,12 @@
     <summary class="block-opener">⚙️</summary>
     <div>
       <div class="option">
-        <span class="info-label">🍅 Number of pomodori by cycle : <span class="info-value">{{pomodoriByCycle}}</span></span> 
+        <span class="info-label">🍅 Number of pomodori by cycle : <span class="info-value">{{pomodoriByCycle}}</span></span>
         <span class="stat-selector">
           <button class="stat-selector-button" :class="{'disabled':pomodoriByCycle==1, 'enabled-selector':pomodoriByCycle!=1, 'disabled-selector':pomodoriByCycle==1}" @click="$emit('updatePomodoriByCycle',pomodoriByCycle-1)" >-</button>
           <button class="stat-selector-button enabled-selector" @click="$emit('updatePomodoriByCycle',pomodoriByCycle+1)">+</button>
         </span>
-      </div> 
+      </div>
       <div class="option">
         <span class="info-label">🎯 Pomodori goal : <span class="info-value">{{goal}}</span></span>
         <span class="stat-selector">
@@ -59,40 +59,58 @@
           </li>
         </ul>
       </details>
-      
+
     </div>
   </details>
 </template>
-<script>
-export default {
-    data(){ 
-        return {
-            grandiantEnabledOption:this.grandiantEnabled,
-            audioEnabledOption: this.audioEnabled
-        }
-    },
-    props:{
-        goal: Number,
-        pomodoriByCycle: Number,
-        totalPomodoro: Number,
-        pomodoroTime: Object,
-        breakTime: Object,
-        grandiantEnabled: Boolean,
-        audioEnabled: Boolean
-    },
-    watch:{
-        grandiantEnabledOption(newValue){
-            this.$emit('updateGradiantEnabled', newValue);
-        },
-        audioEnabledOption(newValue){
-            this.$emit('updateAudioEnabled', newValue);
-        }
-    },
-}
+<script setup lang="ts">
+import { ref, watch, defineEmits, defineProps } from 'vue'
+
+const props = defineProps({
+  goal: {
+    type: Number,
+    required: true
+  },
+  pomodoriByCycle: {
+    type: Number,
+    required: true
+  },
+  totalPomodoriDone: {
+    type: Number,
+    required: true
+  },
+  pomodoroTime: {
+    type: Object,
+    required: true
+  },
+  breakTime: {
+    type: Object,
+    required: true
+  },
+  grandiantEnabled: {
+    type: Boolean,
+    required: true
+  },
+  audioEnabled: {
+    type: Boolean,
+    required: true
+  }
+})
+
+const grandiantEnabledOption = ref(props.grandiantEnabled)
+const audioEnabledOption = ref(props.audioEnabled)
+const emits = defineEmits(['updateGradiantEnabled', 'audioEnabledOption'])
+
+watch(grandiantEnabledOption, (newValue: boolean) => {
+  emits('updateGradiantEnabled', newValue)
+})
+watch(audioEnabledOption, (newValue: boolean) => {
+  emits('audioEnabledOption', newValue)
+})
 </script>
 <style>
 .option{
-  width : 400px; 
+  width : 400px;
   height: 30px;
 }
 .stat-selector{
@@ -116,7 +134,7 @@ export default {
   color: rgba(252,252,252,1);
 }
 .enabled-selector{
-  background-color: rgba(252,252,252,0.5);  
+  background-color: rgba(252,252,252,0.5);
   color: rgba(0, 0, 0, 1 );
 }
 .checkbox-selector{

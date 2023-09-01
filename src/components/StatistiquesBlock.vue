@@ -54,11 +54,11 @@ const props = defineProps({
   breakTime: {
     type: Object,
     required: true
-  },
-  timer: {
-    type: String,
-    required: true
   }
+  // timer: {
+  //   type: String,
+  //   required: true
+  // }
 })
 
 const timeBeforeBigBreak = computed(() => { return null })

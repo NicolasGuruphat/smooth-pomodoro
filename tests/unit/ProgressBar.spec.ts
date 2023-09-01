@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-import ProgressBar from '@/components/ProgressBar'
+import ProgressBar from '@/components/ProgressBar.vue'
 import { mount } from '@vue/test-utils'
 
 describe('Progress Bar', () => {

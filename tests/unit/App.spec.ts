@@ -24,19 +24,31 @@ describe('App', () => {
 
     const skipButton = wrapper.find('#skip-button').find('button')
     await skipButton.trigger('click')
-
     stats = wrapper.findComponent(StatistiquesBlock).html()
     expect(stats).toMatch(/🍅(.|\n)*1 \/ 4(.|\n)*🎯(.|\n)*1/)
 
     await skipButton.trigger('click')
-
     stats = wrapper.findComponent(StatistiquesBlock).html()
     expect(stats).toMatch(/🍅(.|\n)*2 \/ 4(.|\n)*🎯(.|\n)*1/)
 
     await wrapper.find('#reset-button').find('button').trigger('click')
-
     stats = wrapper.findComponent(StatistiquesBlock).html()
     expect(stats).toMatch(/🍅(.|\n)*1 \/ 4(.|\n)*🎯(.|\n)*0/)
   })
-  // TODO : go back to first button
+  it('goes to the first pomodoro of the cycle when the "->1st" button is clicked', async () => {
+    const wrapper = mount(App)
+    const skipButton = wrapper.find('#skip-button').find('button')
+
+    await skipButton.trigger('click')
+    await skipButton.trigger('click')
+
+    await wrapper.find('#go-to-first-button').find('button').trigger('click')
+    let stats = wrapper.findComponent(StatistiquesBlock).html()
+    expect(stats).toMatch(/🍅(.|\n)*1 \/ 4(.|\n)*🎯(.|\n)*0/)
+
+    for (let i = 0; i < 10; i++) await skipButton.trigger('click') // case where a cycle has been completed
+    await wrapper.find('#go-to-first-button').find('button').trigger('click')
+    stats = wrapper.findComponent(StatistiquesBlock).html()
+    expect(stats).toMatch(/🍅(.|\n)*1 \/ 4(.|\n)*🎯(.|\n)*4/)
+  })
 })

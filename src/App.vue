@@ -102,15 +102,16 @@ const progressBackgroundGradiant = computed(() => {
   if (grandiantEnabled.value) {
     const baseTime : number = working.value ? pomodoroTime.minutes * 60 + pomodoroTime.seconds : breakTime.small.minutes * 60 + breakTime.small.seconds * 60
     const currentTime : number = baseTime - (minutes.value * 60 + seconds.value)
-    const progression : number = ((currentTime / baseTime) - 0.5) * 100 * 2 * -1
     if (working.value) {
+      const progression : number = ((currentTime / baseTime) - 1 / 3) * 100 * 3 * -1
+
       return {
         background: `linear-gradient(75deg, #ffb5aa ${progression}%, #aaffb6 100%)`
       }
     } else {
+      const progression : number = ((currentTime / baseTime) - 0.2) * 100 * 5 * -1
       return {
-        background: 'green'
-        // "background": `linear-gradient(75deg, rgba(255,0,0,1) 100%,  rgba(0,255,12,1) ${progression}%)`
+        background: `linear-gradient(-105deg, #aaffb6 ${progression}%, #ffb5aa 100%)`
       }
     }
   } else {

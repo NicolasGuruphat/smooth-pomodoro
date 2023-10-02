@@ -12,6 +12,7 @@
       @updateGradiantEnabled="($event: boolean) => grandiantEnabled = $event"
       @updateAudioEnabled="($event: boolean) => audioEnabled = $event">
     </OptionsBlock>
+    <img :style="[fullScreenActivated ? 'opacity:0.5' : 'opacity:1']" id="fullscreen-logo" @click="fullScreen()" :src="fullscreenLogo" alt="fullscreen-logo" />
 
     <span id="timer" :class="{ 'working': working, 'not-working': !working }">{{ timer }}</span>
     <div>
@@ -41,11 +42,22 @@ import StatistiquesBlock from './components/StatistiquesBlock.vue'
 import OptionsBlock from './components/OptionsBlock.vue'
 import ProgressBar from './components/ProgressBar.vue'
 import { ref, reactive, computed } from 'vue'
-
+import fullscreenLogo from '@/assets/fullscreen.svg'
 // onMounted(() => {
 //   minutes.value = pomodoroTime.minutes
 //   seconds.value = pomodoroTime.seconds
 // })
+const fullScreenActivated = ref<boolean>(false)
+
+function fullScreen () : void {
+  if (document.fullscreenElement) {
+    document.exitFullscreen()
+    fullScreenActivated.value = false
+  } else {
+    document.documentElement.requestFullscreen()
+    fullScreenActivated.value = true
+  }
+}
 
 const intervalId = ref<number | null>(null)
 function startTimer () : void {
@@ -251,5 +263,13 @@ footer {
 
 a {
   color: #00308F;
+}
+
+#fullscreen-logo{
+  position: absolute;
+  bottom: 5px;
+  left: 5px;
+  height:50px;
+  z-index: 2;
 }
 </style>

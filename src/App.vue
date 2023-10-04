@@ -1,4 +1,4 @@
-<template>
+<template ref="app">
   <div class="progress-background-base" :style="progressBackgroundGradiant">
     <StatistiquesBlock class="stats-block" :currentPomodoroNumber="currentPomodoroNumber" :pomodoriByCycle="pomodoriByCycle"
       :totalPomodoriDone="totalPomodoriDone" :goal="goal" :timer="timer" :pomodoroTime="pomodoroTime" :breakTime="breakTime">
@@ -12,6 +12,8 @@
       @updateGradiantEnabled="($event: boolean) => grandiantEnabled = $event"
       @updateAudioEnabled="($event: boolean) => audioEnabled = $event">
     </OptionsBlock>
+
+    <img :style="[isFullscreen ? 'opacity:0.5' : 'opacity:1']" id="fullscreen-logo"  @click="toggle" :src="fullscreenLogo" alt="fullscreen-logo" />
 
     <span id="timer" :class="{ 'working': working, 'not-working': !working }">{{ timer }}</span>
     <div>
@@ -41,11 +43,14 @@ import StatistiquesBlock from './components/StatistiquesBlock.vue'
 import OptionsBlock from './components/OptionsBlock.vue'
 import ProgressBar from './components/ProgressBar.vue'
 import { ref, reactive, computed } from 'vue'
-
+import fullscreenLogo from '@/assets/fullscreen.svg'
+import { useFullscreen } from '@vueuse/core'
 // onMounted(() => {
 //   minutes.value = pomodoroTime.minutes
 //   seconds.value = pomodoroTime.seconds
 // })
+const app = ref(null)
+const { isFullscreen, toggle } = useFullscreen(app)
 
 const intervalId = ref<number | null>(null)
 function startTimer () : void {
@@ -252,5 +257,13 @@ footer {
 
 a {
   color: #00308F;
+}
+
+#fullscreen-logo{
+  position: absolute;
+  bottom: 5px;
+  left: 5px;
+  height:50px;
+  z-index: 2;
 }
 </style>

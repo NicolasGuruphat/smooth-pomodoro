@@ -1,4 +1,4 @@
-<template>
+<template ref="app">
   <div class="progress-background-base" :style="progressBackgroundGradiant">
     <StatistiquesBlock class="stats-block" :currentPomodoroNumber="currentPomodoroNumber" :pomodoriByCycle="pomodoriByCycle"
       :totalPomodoriDone="totalPomodoriDone" :goal="goal" :timer="timer" :pomodoroTime="pomodoroTime" :breakTime="breakTime">
@@ -13,12 +13,14 @@
       @updateAudioEnabled="($event: boolean) => audioEnabled = $event">
     </OptionsBlock>
 
+    <img :style="[isFullscreen ? 'opacity:0.5' : 'opacity:1']" id="fullscreen-logo"  @click="toggle" :src="fullscreenLogo" alt="fullscreen-logo" />
+
     <span id="timer" :class="{ 'working': working, 'not-working': !working }">{{ timer }}</span>
     <div>
       <ActionButton id="start-stop-button" :action="startOrStop">{{ startOrStopLabel }}</ActionButton>
       <ActionButton id="skip-button" :action="skipCurrentPomodoro">SKIP</ActionButton>
       <ActionButton id="reset-button" :action="globalReset">RESET</ActionButton>
-      <ActionButton :action="goBackToFirstPomodoro" :enabled="currentPomodoroNumber != 1 || !working">➔1<sup>st</sup>
+      <ActionButton id="go-to-first-button" :action="goBackToFirstPomodoro" :enabled="currentPomodoroNumber != 1 || !working">➔1<sup>st</sup>
       </ActionButton>
     </div>
     <ProgressBar :goal="goal" :totalPomodoriDone="totalPomodoriDone" :pomodoriByCycle="pomodoriByCycle">
@@ -41,11 +43,14 @@ import StatistiquesBlock from './components/StatistiquesBlock.vue'
 import OptionsBlock from './components/OptionsBlock.vue'
 import ProgressBar from './components/ProgressBar.vue'
 import { ref, reactive, computed } from 'vue'
-
+import fullscreenLogo from '@/assets/fullscreen.svg'
+import { useFullscreen } from '@vueuse/core'
 // onMounted(() => {
 //   minutes.value = pomodoroTime.minutes
 //   seconds.value = pomodoroTime.seconds
 // })
+const app = ref(null)
+const { isFullscreen, toggle } = useFullscreen(app)
 
 const intervalId = ref<number | null>(null)
 function startTimer () : void {
@@ -102,15 +107,16 @@ const progressBackgroundGradiant = computed(() => {
   if (grandiantEnabled.value) {
     const baseTime : number = working.value ? pomodoroTime.minutes * 60 + pomodoroTime.seconds : breakTime.small.minutes * 60 + breakTime.small.seconds * 60
     const currentTime : number = baseTime - (minutes.value * 60 + seconds.value)
-    const progression : number = ((currentTime / baseTime) - 0.5) * 100 * 2 * -1
     if (working.value) {
+      const progression : number = ((currentTime / baseTime) - 1 / 3) * 100 * 3 * -1
+
       return {
         background: `linear-gradient(75deg, #ffb5aa ${progression}%, #aaffb6 100%)`
       }
     } else {
+      const progression : number = ((currentTime / baseTime) - 0.2) * 100 * 5 * -1
       return {
-        background: 'green'
-        // "background": `linear-gradient(75deg, rgba(255,0,0,1) 100%,  rgba(0,255,12,1) ${progression}%)`
+        background: `linear-gradient(-105deg, #aaffb6 ${progression}%, #ffb5aa 100%)`
       }
     }
   } else {
@@ -251,5 +257,13 @@ footer {
 
 a {
   color: #00308F;
+}
+
+#fullscreen-logo{
+  position: absolute;
+  bottom: 5px;
+  left: 5px;
+  height:50px;
+  z-index: 2;
 }
 </style>

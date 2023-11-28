@@ -12,10 +12,11 @@
       @updateGradiantEnabled="($event: boolean) => grandiantEnabled = $event"
       @updateAudioEnabled="($event: boolean) => audioEnabled = $event">
     </OptionsBlock>
-
     <img :style="[isFullscreen ? 'opacity:0.5' : 'opacity:1']" id="fullscreen-logo"  @click="toggle" :src="fullscreenLogo" alt="fullscreen-logo" />
+    <button @click="removeOneMinute">Remove</button>
 
     <span id="timer" :class="{ 'working': working, 'not-working': !working }">{{ timer }}</span>
+    <button @click="addOneMinute">Add</button>
     <div>
       <ActionButton id="start-stop-button" :action="startOrStop">{{ startOrStopLabel }}</ActionButton>
       <ActionButton id="skip-button" :action="skipCurrentPomodoro">SKIP</ActionButton>
@@ -149,6 +150,14 @@ function checkTime () : void {
       switchSession()
     }
   }
+}
+
+function addOneMinute () : void {
+  minutes.value++
+}
+
+function removeOneMinute () : void {
+  minutes.value--
 }
 
 function skipCurrentPomodoro () : void {

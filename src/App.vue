@@ -43,8 +43,12 @@ import StatistiquesBlock from './components/StatistiquesBlock.vue'
 import OptionsBlock from './components/OptionsBlock.vue'
 import ProgressBar from './components/ProgressBar.vue'
 import { ref, reactive, computed } from 'vue'
+
 import fullscreenLogo from '@/assets/fullscreen.svg'
+import gongHit from '@/assets/gong_hit.wav'
+
 import { useFullscreen, useFavicon } from '@vueuse/core'
+import { useSound } from '@vueuse/sound'
 
 // onMounted(() => {
 //   minutes.value = pomodoroTime.minutes
@@ -75,14 +79,16 @@ function startOrStop () : void {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const soundEffect = ref(new Audio(require('./assets/gong_hit.wav')))
+// const soundEffect = ref(new Audio(require('./assets/gong_hit.wav')))
+const { play } = useSound(gongHit)
 const audioEnabled = ref<boolean>(true)
 const working = ref<boolean>(true)
 const pomodoriByCycle = ref<number>(4)
 const currentPomodoroNumber = ref<number>(1)
+
 function switchSession () : void {
   if (audioEnabled.value) {
-    soundEffect.value.play()
+    play()
   }
   if (working.value) {
     // switch to pause session

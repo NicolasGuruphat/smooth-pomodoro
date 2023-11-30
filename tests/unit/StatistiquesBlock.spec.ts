@@ -14,7 +14,6 @@ describe('Goal statistique', () => {
         breakTime: { small: { minutes: 5, seconds: 0 }, big: { minutes: 15, seconds: 0 } }
       }
     })
-    console.log(typeof wrapper)
 
     expect(wrapper.vm.goalStat).toBe('0')
     expect(goalPart(wrapper)).toBe(' 0')

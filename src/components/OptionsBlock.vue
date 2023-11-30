@@ -34,8 +34,8 @@
             <div class="option">
               <span class="info-label">Pomodoro   : <span class="info-value">{{ pomodoroTime.minutes }}</span></span>
               <span class="stat-selector">
-                <button class="stat-selector-button" :class="{'disabled':pomodoroTime.minutes==1, 'enabled-selector':pomodoroTime.minutes!=1, 'disabled-selector':pomodoroTime.minutes==1}" @click="$emit('updatePomodoroTime',pomodoroTime.minutes-1)" :disabled="pomodoroTime.minutes==0">-</button>
-                <button class="stat-selector-button enabled-selector" @click="$emit('updatePomodoroTime',pomodoroTime.minutes+1)">+</button>
+                <button class="stat-selector-button" :class="{'disabled':pomodoroTime.minutes==1, 'enabled-selector':pomodoroTime.minutes!=1, 'disabled-selector':pomodoroTime.minutes==1}" @click="pomodoroTime.minutes-=1" :disabled="pomodoroTime.minutes==0">-</button>
+                <button class="stat-selector-button enabled-selector" @click="pomodoroTime.minutes+=1">+</button>
               </span>
             </div>
           </li>
@@ -43,8 +43,8 @@
             <div class="option">
               <span class="info-label">Small break : <span class="info-value">{{ breakTime.small.minutes }}</span></span>
               <span class="stat-selector">
-                <button class="stat-selector-button" :class="{'disabled':breakTime.small.minutes==1, 'enabled-selector':breakTime.small.minutes!=1, 'disabled-selector':breakTime.small.minutes==1}" @click="$emit('updateSmallBreakTime',breakTime.small.minutes-1)" :disabled="breakTime.small.minutes==0">-</button>
-                <button class="stat-selector-button enabled-selector" @click="$emit('updateSmallBreakTime',breakTime.small.minutes+1)">+</button>
+                <button class="stat-selector-button" :class="{'disabled':breakTime.small.minutes==1, 'enabled-selector':breakTime.small.minutes!=1, 'disabled-selector':breakTime.small.minutes==1}" @click="breakTime.small.minutes-=1" :disabled="breakTime.small.minutes==0">-</button>
+                <button class="stat-selector-button enabled-selector" @click="breakTime.small.minutes+=1">+</button>
               </span>
             </div>
           </li>
@@ -52,8 +52,8 @@
             <div class="option">
               <span class="info-label">Big break   : <span class="info-value">{{ breakTime.big.minutes }}</span></span>
               <span class="stat-selector">
-                <button class="stat-selector-button" :class="{'disabled':breakTime.big.minutes==1, 'enabled-selector':breakTime.big.minutes!=1, 'disabled-selector':breakTime.big.minutes==1}" @click="$emit('updateBigBreakTime',breakTime.small.minutes-1)" :disabled="breakTime.big.minutes==0">-</button>
-                <button class="stat-selector-button enabled-selector" @click="$emit('updateBigBreakTime',breakTime.big.minutes+1)">+</button>
+                <button class="stat-selector-button" :class="{'disabled':breakTime.big.minutes==1, 'enabled-selector':breakTime.big.minutes!=1, 'disabled-selector':breakTime.big.minutes==1}" @click="breakTime.big.minutes-=1" :disabled="breakTime.big.minutes==0">-</button>
+                <button class="stat-selector-button enabled-selector" @click="breakTime.big.minutes+=1">+</button>
               </span>
             </div>
           </li>
@@ -64,7 +64,12 @@
   </details>
 </template>
 <script setup lang="ts">
+import { useParameters } from '@/store/Parameters'
 import { ref, watch, defineEmits, defineProps } from 'vue'
+import { storeToRefs } from 'pinia'
+
+const store = useParameters()
+const { pomodoroTime, breakTime } = storeToRefs(store)
 
 const props = defineProps({
   goal: {
@@ -77,14 +82,6 @@ const props = defineProps({
   },
   totalPomodoriDone: {
     type: Number,
-    required: true
-  },
-  pomodoroTime: {
-    type: Object,
-    required: true
-  },
-  breakTime: {
-    type: Object,
     required: true
   },
   grandiantEnabled: {

@@ -1,14 +1,12 @@
 <template ref="app">
   <div class="progress-background-base" :style="progressBackgroundGradiant">
     <StatistiquesBlock class="stats-block" :currentPomodoroNumber="currentPomodoroNumber" :pomodoriByCycle="pomodoriByCycle"
-      :totalPomodoriDone="totalPomodoriDone" :goal="goal" :timer="timer" :pomodoroTime="pomodoroTime" :breakTime="breakTime">
+      :totalPomodoriDone="totalPomodoriDone" :goal="goal" :timer="timer">
     </StatistiquesBlock>
     <OptionsBlock class="options-block" :pomodoriByCycle="pomodoriByCycle" :totalPomodoriDone="totalPomodoriDone"
-      :pomodoroTime="pomodoroTime" :breakTime="breakTime" :goal="goal" :grandiantEnabled="grandiantEnabled"
+      :goal="goal" :grandiantEnabled="grandiantEnabled"
       :audioEnabled="audioEnabled" @updatePomodoriByCycle="($event: number) => pomodoriByCycle = $event"
-      @updateBigBreakTime="($event: number) => breakTime.big.minutes = $event"
-      @updateSmallBreakTime="($event: number) => breakTime.small.minutes = $event" @updateGoal="($event: number) => goal = $event"
-      @updatePomodoroTime="($event: number) => pomodoroTime.minutes = $event"
+      @updateGoal="($event: number) => goal = $event"
       @updateGradiantEnabled="($event: boolean) => grandiantEnabled = $event"
       @updateAudioEnabled="($event: boolean) => audioEnabled = $event">
     </OptionsBlock>
@@ -37,19 +35,21 @@
 </template>
 
 <script setup lang="ts">
-
+import { useParameters } from '@/store/Parameters'
 import ActionButton from './components/ActionButton.vue'
 import StatistiquesBlock from './components/StatistiquesBlock.vue'
 import OptionsBlock from './components/OptionsBlock.vue'
 import ProgressBar from './components/ProgressBar.vue'
-import { ref, reactive, computed } from 'vue'
+import { ref, computed } from 'vue'
 import fullscreenLogo from '@/assets/fullscreen.svg'
 import { useFullscreen } from '@vueuse/core'
-// onMounted(() => {
-//   minutes.value = pomodoroTime.minutes
-//   seconds.value = pomodoroTime.seconds
-// })
+import { storeToRefs } from 'pinia'
+
 const app = ref(null)
+
+const store = useParameters()
+const { pomodoroTime, breakTime } = storeToRefs(store)
+
 const { isFullscreen, toggle } = useFullscreen(app)
 
 const intervalId = ref<number | null>(null)
@@ -86,18 +86,18 @@ function switchSession () : void {
   if (working.value) {
     // switch to pause session
     if (currentPomodoroNumber.value === pomodoriByCycle.value) {
-      minutes.value = breakTime.big.minutes
-      seconds.value = breakTime.big.seconds
+      minutes.value = breakTime.value.big.minutes
+      seconds.value = breakTime.value.big.seconds
     } else {
-      minutes.value = breakTime.small.minutes
-      seconds.value = breakTime.small.seconds
+      minutes.value = breakTime.value.small.minutes
+      seconds.value = breakTime.value.small.seconds
     }
     totalPomodoriDone.value += 1
   } else {
     // switch to work session
     currentPomodoroNumber.value = (currentPomodoroNumber.value) % pomodoriByCycle.value + 1
-    minutes.value = pomodoroTime.minutes
-    seconds.value = pomodoroTime.seconds
+    minutes.value = pomodoroTime.value.minutes
+    seconds.value = pomodoroTime.value.seconds
   }
   working.value = !working.value
 }
@@ -105,7 +105,7 @@ function switchSession () : void {
 const grandiantEnabled = ref<boolean>(false)
 const progressBackgroundGradiant = computed(() => {
   if (grandiantEnabled.value) {
-    const baseTime : number = working.value ? pomodoroTime.minutes * 60 + pomodoroTime.seconds : breakTime.small.minutes * 60 + breakTime.small.seconds * 60
+    const baseTime : number = working.value ? pomodoroTime.value.minutes * 60 + pomodoroTime.value.seconds : breakTime.value.small.minutes * 60 + breakTime.value.small.seconds * 60
     const currentTime : number = baseTime - (minutes.value * 60 + seconds.value)
     const progression : number = ((currentTime / baseTime) - 0.5) * 100 * 2 * -1
     if (working.value) {
@@ -123,11 +123,8 @@ const progressBackgroundGradiant = computed(() => {
   }
 })
 
-const pomodoroTime = reactive({ minutes: 25, seconds: 0 })
-const breakTime = reactive({ small: { minutes: 5, seconds: 0 }, big: { minutes: 15, seconds: 0 } })
-
-const minutes = ref<number>(pomodoroTime.minutes)
-const seconds = ref<number>(pomodoroTime.seconds)
+const minutes = ref<number>(pomodoroTime.value.minutes)
+const seconds = ref<number>(pomodoroTime.value.seconds)
 
 // let progression = ref(0);
 const totalPomodoriDone = ref<number>(0)
@@ -174,8 +171,8 @@ function goBackToFirstPomodoro () : void {
 }
 
 function resetTimer () : void {
-  minutes.value = pomodoroTime.minutes
-  seconds.value = pomodoroTime.seconds
+  minutes.value = pomodoroTime.value.minutes
+  seconds.value = pomodoroTime.value.seconds
   working.value = true
 }
 </script>

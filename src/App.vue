@@ -44,8 +44,8 @@ import OptionsBlock from './components/OptionsBlock.vue'
 import ProgressBar from './components/ProgressBar.vue'
 import { ref, reactive, computed } from 'vue'
 
-import fullscreenLogo from '@/assets/fullscreen.svg'
-import gongHit from '@/assets/gong_hit.wav'
+import fullscreenLogo from '../src/assets/fullscreen.svg'
+import gongHit from '../src/assets/gong_hit.wav'
 
 import { useFullscreen, useFavicon } from '@vueuse/core'
 import { useSound } from '@vueuse/sound'
@@ -78,8 +78,6 @@ function startOrStop () : void {
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-// const soundEffect = ref(new Audio(require('./assets/gong_hit.wav')))
 const { play } = useSound(gongHit)
 const audioEnabled = ref<boolean>(true)
 const working = ref<boolean>(true)

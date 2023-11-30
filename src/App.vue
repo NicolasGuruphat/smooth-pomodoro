@@ -44,7 +44,8 @@ import OptionsBlock from './components/OptionsBlock.vue'
 import ProgressBar from './components/ProgressBar.vue'
 import { ref, reactive, computed } from 'vue'
 import fullscreenLogo from '@/assets/fullscreen.svg'
-import { useFullscreen } from '@vueuse/core'
+import { useFullscreen, useFavicon } from '@vueuse/core'
+
 // onMounted(() => {
 //   minutes.value = pomodoroTime.minutes
 //   seconds.value = pomodoroTime.seconds
@@ -85,6 +86,7 @@ function switchSession () : void {
   }
   if (working.value) {
     // switch to pause session
+    changeIcon('green')
     if (currentPomodoroNumber.value === pomodoriByCycle.value) {
       minutes.value = breakTime.big.minutes
       seconds.value = breakTime.big.seconds
@@ -94,6 +96,7 @@ function switchSession () : void {
     }
     totalPomodoriDone.value += 1
   } else {
+    changeIcon('red')
     // switch to work session
     currentPomodoroNumber.value = (currentPomodoroNumber.value) % pomodoriByCycle.value + 1
     minutes.value = pomodoroTime.minutes
@@ -186,6 +189,19 @@ function resetTimer () : void {
   minutes.value = pomodoroTime.minutes
   seconds.value = pomodoroTime.seconds
   working.value = true
+}
+
+const icon = useFavicon()
+
+function changeIcon (color : string) : void {
+  switch (color) {
+    case 'green':
+      icon.value = 'greenTomato.png'
+      break
+    case 'red':
+      icon.value = 'redTomato.png'
+      break
+  }
 }
 </script>
 

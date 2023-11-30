@@ -13,10 +13,9 @@
       @updateAudioEnabled="($event: boolean) => audioEnabled = $event">
     </OptionsBlock>
     <img :style="[isFullscreen ? 'opacity:0.5' : 'opacity:1']" id="fullscreen-logo"  @click="toggle" :src="fullscreenLogo" alt="fullscreen-logo" />
-    <button @click="removeOneMinute">Remove</button>
-
+    <ActionButton id="remove-one-minute-button" :action="removeOneMinute">&#60;</ActionButton>
     <span id="timer" :class="{ 'working': working, 'not-working': !working }">{{ timer }}</span>
-    <button @click="addOneMinute">Add</button>
+    <ActionButton id="add-one-minute-button" :action="addOneMinute">&#62;</ActionButton>
     <div>
       <ActionButton id="start-stop-button" :action="startOrStop">{{ startOrStopLabel }}</ActionButton>
       <ActionButton id="skip-button" :action="skipCurrentPomodoro">SKIP</ActionButton>
@@ -274,5 +273,13 @@ a {
   left: 5px;
   height:50px;
   z-index: 2;
+}
+
+#add-one-minute-button{
+  display: inline;
+}
+
+#remove-one-minute-button{
+  display: inline;
 }
 </style>

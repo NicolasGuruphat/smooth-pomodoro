@@ -145,10 +145,13 @@ const timer = computed(() => {
 })
 
 function checkTime () : void {
-  if (seconds.value === -1) {
+  if (minutes.value < 0) {
+    switchSession()
+  }
+  if (seconds.value <= 0) {
     seconds.value = 59
     minutes.value--
-    if (minutes.value === -1) {
+    if (minutes.value === 0) {
       switchSession()
     }
   }

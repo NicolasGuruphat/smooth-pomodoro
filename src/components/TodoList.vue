@@ -1,6 +1,7 @@
 <template>
     <div id="todo-list">
     <div>TODO</div>
+    <input v-model="taskToAdd" type="text" id="add-to-list-input"/><button id="add-to-list-button" @click="addToList()">🔵</button>
     <ul>
         <li v-for="(selected, task, i)  in taskList" :key="i" @click="select(task)" ref="itemRefs" :class="{'selected':selected}">
             {{ task }}
@@ -9,9 +10,18 @@
     </div>
 </template>
 <script setup lang="ts">
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
 
-const taskList = reactive({ 'tache 1': false, 'tache 2': false })
+const taskToAdd = ref('')
+const taskList = reactive({ 1: false, 'tache 2': false })
+
+const addToList = () : void => {
+  if (taskList[taskToAdd.value] !== undefined || !taskToAdd.value.trim().length) {
+    return
+  }
+  taskList[taskToAdd.value] = false
+  taskToAdd.value = ''
+}
 const select = (j : string) : void => {
   taskList[j] = !taskList[j]
 }
@@ -22,11 +32,10 @@ const select = (j : string) : void => {
     text-decoration: line-through;
 }
 #todo-list{
-    border:1px solid black;
+    border:2px dashed black;
+    border-radius: 0.5rem;
     cursor: move;
-}
-ul{
-    list-style: none;
+    background: rgba(255, 255, 255, 0.5);
 }
 ul li{
     list-style: "🟩";
@@ -34,5 +43,17 @@ ul li{
 }
 ul li.selected {
     list-style: "✅";
+}
+#add-to-list-button {
+    border:none;
+    background-color: transparent;
+    margin-right:1rem;
+
+}
+#add-to-list-input {
+    border:2px dashed black;
+    background-color: transparent;
+    border-radius: 0.5rem;
+    margin-left:1rem;
 }
 </style>

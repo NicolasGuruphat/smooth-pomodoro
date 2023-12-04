@@ -1,7 +1,7 @@
 <template>
     <div id="todo-list">
     <div>TODO</div>
-    <input v-model="taskToAdd" type="text" id="add-to-list-input"/><button id="add-to-list-button" @click="addToList()">🔵</button>
+    <input ref='addToListInput' v-model="taskToAdd" type="text" id="add-to-list-input"/><button id="add-to-list-button" @click="addToList()">🔵</button>
     <ul>
         <li v-for="(selected, task, i)  in taskList" :key="i" @click="select(task)" ref="itemRefs" :class="{'selected':selected}">
             {{ task }}
@@ -15,8 +15,13 @@ import { reactive, ref } from 'vue'
 const taskToAdd = ref('')
 const taskList = reactive({ 1: false, 'tache 2': false })
 
-const addToList = () : void => {
+const addToListInput = ref('')
+
+const addToList = async () : void => {
   if (taskList[taskToAdd.value] !== undefined || !taskToAdd.value.trim().length) {
+    addToListInput.value.style.border = '2px dashed red'
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    addToListInput.value.style.border = ''
     return
   }
   taskList[taskToAdd.value] = false

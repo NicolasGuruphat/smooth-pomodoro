@@ -1,5 +1,8 @@
 # smooth-pomodoro
-![image](https://github.com/NicolasGuruphat/smooth-pomodoro/assets/82589938/279de27c-1513-42da-9f5f-c0d2795a5027)
+![image](https://github.com/NicolasGuruphat/smooth-pomodoro/assets/82589938/ad1f25a2-1987-4a2d-af46-628174fb5eb9)
+
+
+
 
 ## Project setup
 ```

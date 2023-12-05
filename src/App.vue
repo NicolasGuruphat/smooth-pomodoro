@@ -10,15 +10,15 @@
       @updateGradiantEnabled="($event: boolean) => grandiantEnabled = $event"
       @updateAudioEnabled="($event: boolean) => audioEnabled = $event">
     </OptionsBlock>
-
     <img :style="[isFullscreen ? 'opacity:0.5' : 'opacity:1']" id="fullscreen-logo"  @click="toggle" :src="fullscreenLogo" alt="fullscreen-logo" />
-
+    <ActionButton id="remove-one-minute-button" :action="removeOneMinute">&#60;</ActionButton>
     <span id="timer" :class="{ 'working': working, 'not-working': !working }">{{ timer }}</span>
+    <ActionButton id="add-one-minute-button" :action="addOneMinute">&#62;</ActionButton>
     <div>
       <ActionButton id="start-stop-button" :action="startOrStop">{{ startOrStopLabel }}</ActionButton>
       <ActionButton id="skip-button" :action="skipCurrentPomodoro">SKIP</ActionButton>
       <ActionButton id="reset-button" :action="globalReset">RESET</ActionButton>
-      <ActionButton :action="goBackToFirstPomodoro" :enabled="currentPomodoroNumber != 1 || !working">➔1<sup>st</sup>
+      <ActionButton id="go-to-first-button" :action="goBackToFirstPomodoro" :enabled="currentPomodoroNumber != 1 || !working">➔1<sup>st</sup>
       </ActionButton>
     </div>
     <ProgressBar :goal="goal" :totalPomodoriDone="totalPomodoriDone" :pomodoriByCycle="pomodoriByCycle">
@@ -42,7 +42,9 @@ import OptionsBlock from './components/OptionsBlock.vue'
 import ProgressBar from './components/ProgressBar.vue'
 import { ref, computed } from 'vue'
 import fullscreenLogo from '@/assets/fullscreen.svg'
-import { useFullscreen } from '@vueuse/core'
+
+import { useFullscreen, useFavicon } from '@vueuse/core'
+
 import { storeToRefs } from 'pinia'
 
 const app = ref(null)
@@ -85,6 +87,7 @@ function switchSession () : void {
   }
   if (working.value) {
     // switch to pause session
+    changeIcon('green')
     if (currentPomodoroNumber.value === pomodoriByCycle.value) {
       minutes.value = breakTime.value.big.minutes
       seconds.value = breakTime.value.big.seconds
@@ -94,6 +97,7 @@ function switchSession () : void {
     }
     totalPomodoriDone.value += 1
   } else {
+    changeIcon('red')
     // switch to work session
     currentPomodoroNumber.value = (currentPomodoroNumber.value) % pomodoriByCycle.value + 1
     minutes.value = pomodoroTime.value.minutes
@@ -107,15 +111,16 @@ const progressBackgroundGradiant = computed(() => {
   if (grandiantEnabled.value) {
     const baseTime : number = working.value ? pomodoroTime.value.minutes * 60 + pomodoroTime.value.seconds : breakTime.value.small.minutes * 60 + breakTime.value.small.seconds * 60
     const currentTime : number = baseTime - (minutes.value * 60 + seconds.value)
-    const progression : number = ((currentTime / baseTime) - 0.5) * 100 * 2 * -1
     if (working.value) {
+      const progression : number = ((currentTime / baseTime) - 1 / 3) * 100 * 3 * -1
+
       return {
         background: `linear-gradient(75deg, #ffb5aa ${progression}%, #aaffb6 100%)`
       }
     } else {
+      const progression : number = ((currentTime / baseTime) - 0.2) * 100 * 5 * -1
       return {
-        background: 'green'
-        // "background": `linear-gradient(75deg, rgba(255,0,0,1) 100%,  rgba(0,255,12,1) ${progression}%)`
+        background: `linear-gradient(-105deg, #aaffb6 ${progression}%, #ffb5aa 100%)`
       }
     }
   } else {
@@ -138,13 +143,24 @@ const timer = computed(() => {
 })
 
 function checkTime () : void {
-  if (seconds.value === -1) {
+  if (minutes.value < 0) {
+    switchSession()
+  }
+  if (seconds.value <= 0) {
     seconds.value = 59
     minutes.value--
-    if (minutes.value === -1) {
+    if (minutes.value === 0) {
       switchSession()
     }
   }
+}
+
+function addOneMinute () : void {
+  minutes.value++
+}
+
+function removeOneMinute () : void {
+  minutes.value--
 }
 
 function skipCurrentPomodoro () : void {
@@ -174,6 +190,19 @@ function resetTimer () : void {
   minutes.value = pomodoroTime.value.minutes
   seconds.value = pomodoroTime.value.seconds
   working.value = true
+}
+
+const icon = useFavicon()
+
+function changeIcon (color : string) : void {
+  switch (color) {
+    case 'green':
+      icon.value = 'greenTomato.png'
+      break
+    case 'red':
+      icon.value = 'redTomato.png'
+      break
+  }
 }
 </script>
 
@@ -261,5 +290,13 @@ a {
   left: 5px;
   height:50px;
   z-index: 2;
+}
+
+#add-one-minute-button{
+  display: inline;
+}
+
+#remove-one-minute-button{
+  display: inline;
 }
 </style>

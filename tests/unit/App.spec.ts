@@ -2,8 +2,13 @@
 import App from '@/App.vue'
 import { mount } from '@vue/test-utils'
 import StatistiquesBlock from '@/components/StatistiquesBlock.vue'
+import { setActivePinia, createPinia } from 'pinia'
 
 describe('App', () => {
+  beforeEach(() => {
+    setActivePinia(createPinia())
+  })
+
   it('displays starting time with correct value', () => {
     const wrapper = mount(App)
     expect(wrapper.find('#timer').text()).toBe('25:00')

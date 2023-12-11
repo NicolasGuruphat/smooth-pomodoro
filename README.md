@@ -1,9 +1,5 @@
 # smooth-pomodoro
-![image](https://github.com/NicolasGuruphat/smooth-pomodoro/assets/82589938/ad1f25a2-1987-4a2d-af46-628174fb5eb9)
-
-
-
-
+![App image](./readme/image.png)
 ## Project setup
 ```
 npm install

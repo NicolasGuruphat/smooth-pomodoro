@@ -13,7 +13,7 @@
 import { reactive, ref } from 'vue'
 
 const taskToAdd = ref('')
-const taskList = reactive({ 1: false, 'tache 2': false })
+const taskList = reactive({ })
 
 const addToListInput = ref('')
 

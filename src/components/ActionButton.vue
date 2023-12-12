@@ -16,7 +16,7 @@ export default {
   }
 }
 </script>
-<style>
+<style scoped>
 .base-button {
     background-color: transparent;
     border: 3px solid white;
@@ -27,6 +27,15 @@ export default {
     font-size: 4vh;
     margin: 1vh;
     cursor: pointer;
+}
 
+.base-button:hover{
+  transition: transform 300ms ease-in-out;
+  transform:scale(1.2)
+}
+
+.base-button:not(:hover){
+  transition: transform 300ms ease-in-out;
+  transform:scale(1)
 }
 </style>

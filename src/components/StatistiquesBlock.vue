@@ -46,14 +46,6 @@ const props = defineProps({
   totalPomodoriDone: {
     type: Number,
     required: true
-  },
-  pomodoroTime: {
-    type: Object,
-    required: true
-  },
-  breakTime: {
-    type: Object,
-    required: true
   }
   // timer: {
   //   type: String,

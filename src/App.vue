@@ -60,7 +60,7 @@ const intervalId = ref<number | null>(null)
 function startTimer () : void {
   intervalId.value = setInterval(() => {
     seconds.value--
-  }, 250)
+  }, 1000)
 }
 
 const startOrStopLabel = ref<string>('START')

@@ -2,8 +2,13 @@
 import App from '@/App.vue'
 import { mount } from '@vue/test-utils'
 import StatistiquesBlock from '@/components/StatistiquesBlock.vue'
+import { setActivePinia, createPinia } from 'pinia'
 
 describe('App', () => {
+  beforeEach(() => {
+    setActivePinia(createPinia())
+  })
+
   it('displays starting time with correct value', () => {
     const wrapper = mount(App)
     expect(wrapper.find('#timer').text()).toBe('25:00')
@@ -25,7 +30,6 @@ describe('App', () => {
   it('goes to the next pomodoro when the "SKIP" button is clicked', async () => {
     const wrapper = mount(App)
     let stats : string = wrapper.findComponent(StatistiquesBlock).html()
-    console.log(stats)
     expect(stats).toMatch(/🍅(.|\n)*1 \/ 4(.|\n)*🎯(.|\n)*0/)
 
     const skipButton = wrapper.find('#skip-button').find('button')
@@ -67,5 +71,15 @@ describe('App', () => {
       expect(stats).toMatch(/🍅(.|\n)*1 \/ 4(.|\n)*🎯(.|\n)*0/)
       expect(wrapper.find('#timer').text()).toBe('25:00')
     }, 1000)
+  })
+  it('adds one minute when the ">" button is clicked', async () => {
+    const wrapper = mount(App)
+    await wrapper.find('#add-one-minute-button').find('button').trigger('click')
+    expect(wrapper.find('#timer').text()).toBe('26:00')
+  })
+  it('removes one minute when the "<" button is clicked', async () => {
+    const wrapper = mount(App)
+    await wrapper.find('#remove-one-minute-button').find('button').trigger('click')
+    expect(wrapper.find('#timer').text()).toBe('24:00')
   })
 })

@@ -1,6 +1,6 @@
 <template>
   <div id="todo-list">
-    <h2>Task List {{ isTaskListEmpty ? "📭" : "📬" }}</h2>
+    <h2>Task List {{ isThereUncompletedTask ? "📭" : "📬" }}</h2>
     <form v-on:submit.prevent="addToList">
       <input ref='addToListInput' v-model="taskToAdd" type="text" id="add-to-list-input" />
       <button type="submit" id="add-to-list-button">🔵</button>
@@ -15,6 +15,13 @@
           {{ task }}
         </span>
       </div>
+    </div>
+    <div v-if="!isTaskListEmpty" style="text-align: left; padding:0.2rem">
+      <button @click='emptyList'>🗑️</button>
+      <span :style="{'color': completedTasks === totalTasks ? 'green' : 'black'}">
+        {{completedTasks}}/{{totalTasks}}
+        <span v-if='completedTasks === totalTasks'>🎉🐲🐙🦞🐟</span>
+      </span>
     </div>
   </div>
 </template>
@@ -40,6 +47,14 @@ const addToList = async (): Promise<void> => {
   taskToAdd.value = ''
 }
 
+const completedTasks = computed(() => {
+  return Object.values(taskList.value).filter((value) => { return value }).length
+})
+
+const totalTasks = computed(() => {
+  return Object.values(taskList.value).length
+})
+
 const removeFromList = (index: string | number): void => {
   delete taskList.value[index]
 }
@@ -48,7 +63,15 @@ const select = (index: string | number): void => {
   taskList.value[index] = !taskList.value[index]
 }
 
+const emptyList = (): void => {
+  taskList.value = {}
+}
+
 const isTaskListEmpty = computed(() => {
+  return Object.values(taskList.value).length === 0
+})
+
+const isThereUncompletedTask = computed(() => {
   for (const element of Object.values(taskList.value)) {
     if (!element) {
       return false

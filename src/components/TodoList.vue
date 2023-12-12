@@ -1,23 +1,29 @@
 <template>
     <div id="todo-list">
-    <div>TODO</div>
-    <input ref='addToListInput' v-model="taskToAdd" type="text" id="add-to-list-input"/><button id="add-to-list-button" @click="addToList()">🔵</button>
-    <ul>
-        <li v-for="(selected, task, i)  in taskList" :key="i" @click="select(task)" ref="itemRefs" :class="{'selected':selected}">
-            {{ task }}
-        </li>
-    </ul>
+        <div>TODO</div>
+        <input ref='addToListInput' v-model="taskToAdd" type="text" id="add-to-list-input"/><button id="add-to-list-button" @click="addToList()">🔵</button>
+
+        <div v-for="(selected, task, i)  in taskList" :key="i" >
+            <span class="button-group">
+                <button @click="removeFromList(task)">❌</button>
+                <button @click="select(task)">{{ selected ? "✅":"🟩" }}</button>
+            </span>
+            <span  ref="itemRefs" :class="{'selected':selected}" >
+                {{ task }}
+            </span>
+        </div>
     </div>
 </template>
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 
 const taskToAdd = ref('')
-const taskList = reactive({ })
+const taskList: {[index: string]:boolean} = reactive({ })
 
-const addToListInput = ref('')
+const addToListInput = ref<HTMLElement | null>()
 
-const addToList = async () : void => {
+const addToList = async () : Promise<void> => {
+  if (addToListInput.value == null) return
   if (taskList[taskToAdd.value] !== undefined || !taskToAdd.value.trim().length) {
     addToListInput.value.style.border = '2px dashed red'
     await new Promise(resolve => setTimeout(resolve, 1000))
@@ -27,6 +33,12 @@ const addToList = async () : void => {
   taskList[taskToAdd.value] = false
   taskToAdd.value = ''
 }
+
+const removeFromList = (j : string) : void => {
+  console.log(j)
+  delete taskList[j]
+}
+
 const select = (j : string) : void => {
   taskList[j] = !taskList[j]
 }
@@ -42,19 +54,17 @@ const select = (j : string) : void => {
     cursor: move;
     background: rgba(255, 255, 255, 0.5);
 }
-ul li{
-    list-style: "🟩";
-    cursor: pointer;
+
+.button-group{
+    margin-right:1rem;
 }
-ul li.selected {
-    list-style: "✅";
-}
-#add-to-list-button {
+
+button {
     border:none;
     background-color: transparent;
-    margin-right:1rem;
-
+    cursor: pointer;
 }
+
 #add-to-list-input {
     border:2px dashed black;
     background-color: transparent;

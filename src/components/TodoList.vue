@@ -108,7 +108,6 @@ h2 {
 button {
   border: none;
   background-color: transparent;
-  cursor: pointer;
 }
 
 #add-to-list-input {

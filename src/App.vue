@@ -60,7 +60,7 @@ const intervalId = ref<number | null>(null)
 function startTimer () : void {
   intervalId.value = setInterval(() => {
     seconds.value--
-  }, 1000)
+  }, 250)
 }
 
 const startOrStopLabel = ref<string>('START')
@@ -148,10 +148,10 @@ function checkTime () : void {
   if (minutes.value < 0) {
     switchSession()
   }
-  if (seconds.value <= 0) {
+  if (seconds.value < 0) {
     seconds.value = 59
     minutes.value--
-    if (minutes.value === 0) {
+    if (minutes.value < 0) {
       switchSession()
     }
   }

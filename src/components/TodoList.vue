@@ -1,8 +1,10 @@
 <template>
   <div id="todo-list">
     <h2>Task List {{ isTaskListEmpty ? "📭" : "📬" }}</h2>
-    <input ref='addToListInput' v-model="taskToAdd" type="text" id="add-to-list-input" /><button id="add-to-list-button"
-      @click="addToList()">🔵</button>
+    <form v-on:submit.prevent="addToList">
+      <input ref='addToListInput' v-model="taskToAdd" type="text" id="add-to-list-input" />
+      <button type="submit" id="add-to-list-button">🔵</button>
+    </form>
     <div id="task-list">
       <div v-for="(selected, task, i)  in taskList" :key="i" class="task">
         <span class="button-group">
@@ -107,4 +109,5 @@ button {
 
 #add-to-list-button {
   padding-right: 0;
-}</style>
+}
+</style>

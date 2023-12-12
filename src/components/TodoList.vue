@@ -1,25 +1,27 @@
 <template>
     <div id="todo-list">
-        <div>TODO</div>
-        <input ref='addToListInput' v-model="taskToAdd" type="text" id="add-to-list-input"/><button id="add-to-list-button" @click="addToList()">🔵</button>
-
-        <div v-for="(selected, task, i)  in taskList" :key="i" >
-            <span class="button-group">
-                <button @click="removeFromList(task)">❌</button>
-                <button @click="select(task)">{{ selected ? "✅":"🟩" }}</button>
-            </span>
-            <span  ref="itemRefs" :class="{'selected':selected}" >
-                {{ task }}
-            </span>
+        <div id="content">
+            <div>TODO</div>
+            <input ref='addToListInput' v-model="taskToAdd" type="text" id="add-to-list-input"/><button id="add-to-list-button" @click="addToList()">🔵</button>
+            <div v-for="(selected, task, i)  in taskList" :key="i" id="task-list" >
+                <span class="button-group">
+                    <button @click="removeFromList(task)">❌</button>
+                    <button @click="select(task)">{{ selected ? "✅":"🟩" }}</button>
+                </span>
+                <span  ref="itemRefs" :class="{'selected':selected}" >
+                    {{ task }}
+                </span>
+            </div>
         </div>
     </div>
 </template>
+
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useStorage } from '@vueuse/core'
 
 const taskToAdd = ref('')
-const taskList = useStorage<{[index: string]:boolean}>('taskList', { }, localStorage)
+const taskList = useStorage<{[index: string | number]:boolean}>('taskList', { }, localStorage)
 
 const addToListInput = ref<HTMLElement | null>()
 
@@ -35,12 +37,12 @@ const addToList = async () : Promise<void> => {
   taskToAdd.value = ''
 }
 
-const removeFromList = (j : string) : void => {
-  delete taskList.value[j]
+const removeFromList = (index : string | number) : void => {
+  delete taskList.value[index]
 }
 
-const select = (j : string) : void => {
-  taskList.value[j] = !taskList.value[j]
+const select = (index : string | number) : void => {
+  taskList.value[index] = !taskList.value[index]
 }
 </script>
 <style scoped>
@@ -70,5 +72,14 @@ button {
     background-color: transparent;
     border-radius: 0.5rem;
     margin-left:1rem;
+}
+
+#task-list{
+    margin-left:1rem;
+    text-align: left;
+}
+
+#content{
+    padding:0.5rem;
 }
 </style>

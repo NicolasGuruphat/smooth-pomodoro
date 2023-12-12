@@ -27,7 +27,7 @@
 
     </ProgressBar>
     <div ref="todoList" :style="style" style="position: fixed">
-      <todoList></todoList>
+      <TodoList></TodoList>
     </div>
     <footer>
       <div>Smooth Pomodoro - by Nicolas Guruphat</div>
@@ -46,7 +46,7 @@ import StatistiquesBlock from './components/StatistiquesBlock.vue'
 import OptionsBlock from './components/OptionsBlock.vue'
 import ProgressBar from './components/ProgressBar.vue'
 import TodoList from './components/TodoList.vue'
-import { ref, reactive, computed } from 'vue'
+import { ref, computed } from 'vue'
 import fullscreenLogo from '@/assets/fullscreen.svg'
 import { useFullscreen, useFavicon, useDraggable } from '@vueuse/core'
 import { storeToRefs } from 'pinia'

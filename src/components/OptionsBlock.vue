@@ -105,7 +105,7 @@ watch(audioEnabledOption, (newValue: boolean) => {
   emits('audioEnabledOption', newValue)
 })
 </script>
-<style>
+<style scoped>
 .option{
   width : 400px;
   height: 30px;

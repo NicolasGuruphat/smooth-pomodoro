@@ -26,6 +26,9 @@
     <ProgressBar :goal="goal" :totalPomodoriDone="totalPomodoriDone" :pomodoriByCycle="pomodoriByCycle">
 
     </ProgressBar>
+    <div ref="todoList" :style="style" style="position: fixed">
+      <todoList></todoList>
+    </div>
     <footer>
       <div>Smooth Pomodoro - by Nicolas Guruphat</div>
       <a href="https://www.flaticon.com/authors/pixel-perfect" title="tomato icons">Tomato icons created by Pixel perfect
@@ -42,11 +45,10 @@ import ActionButton from './components/ActionButton.vue'
 import StatistiquesBlock from './components/StatistiquesBlock.vue'
 import OptionsBlock from './components/OptionsBlock.vue'
 import ProgressBar from './components/ProgressBar.vue'
-import { ref, computed } from 'vue'
+import TodoList from './components/TodoList.vue'
+import { ref, reactive, computed } from 'vue'
 import fullscreenLogo from '@/assets/fullscreen.svg'
-
-import { useFullscreen, useFavicon } from '@vueuse/core'
-
+import { useFullscreen, useFavicon, useDraggable } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 
 const app = ref(null)
@@ -55,6 +57,12 @@ const store = useParameters()
 const { pomodoroTime, breakTime } = storeToRefs(store)
 
 const { isFullscreen, toggle } = useFullscreen(app)
+
+const todoList = ref<HTMLElement | null>(null)
+
+const { x, y, style } = useDraggable(todoList, {
+  initialValue: { x: 40, y: 40 }
+})
 
 const intervalId = ref<number | null>(null)
 function startTimer () : void {

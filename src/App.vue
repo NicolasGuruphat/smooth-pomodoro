@@ -1,33 +1,35 @@
 <template ref="app">
   <div class="progress-background-base" :style="progressBackgroundGradiant">
-    <StatistiquesBlock class="stats-block" :currentPomodoroNumber="currentPomodoroNumber" :pomodoriByCycle="pomodoriByCycle"
-      :totalPomodoriDone="totalPomodoriDone" :goal="goal" :timer="timer">
+    <StatistiquesBlock class="stats-block" :currentPomodoroNumber="currentPomodoroNumber"
+      :pomodoriByCycle="pomodoriByCycle" :totalPomodoriDone="totalPomodoriDone" :goal="goal" :timer="timer">
     </StatistiquesBlock>
     <OptionsBlock class="options-block" :pomodoriByCycle="pomodoriByCycle" :totalPomodoriDone="totalPomodoriDone"
-      :goal="goal" :grandiantEnabled="grandiantEnabled"
-      :audioEnabled="audioEnabled" @updatePomodoriByCycle="($event: number) => pomodoriByCycle = $event"
+      :goal="goal" :grandiantEnabled="grandiantEnabled" :audioEnabled="audioEnabled"
+      @updatePomodoriByCycle="($event: number) => pomodoriByCycle = $event"
       @updateGoal="($event: number) => goal = $event"
       @updateGradiantEnabled="($event: boolean) => grandiantEnabled = $event"
       @updateAudioEnabled="($event: boolean) => audioEnabled = $event">
     </OptionsBlock>
-    <img :style="[isFullscreen ? 'opacity:0.5' : 'opacity:1']" id="fullscreen-logo"  @click="toggle" :src="fullscreenLogo" alt="fullscreen-logo" />
+    <img :style="[isFullscreen ? 'opacity:0.5' : 'opacity:1']" id="fullscreen-logo" @click="toggle" :src="fullscreenLogo"
+      alt="fullscreen-logo" />
     <div id="timer-group">
-    <ActionButton id="remove-one-minute-button" :action="removeOneMinute">&#60;</ActionButton>
-    <span id="timer" :class="{ 'working': working, 'not-working': !working }">{{ timer }}</span>
-    <ActionButton id="add-one-minute-button" :action="addOneMinute">&#62;</ActionButton>
-  </div>
+      <ActionButton id="remove-one-minute-button" :action="removeOneMinute">&#60;</ActionButton>
+      <span id="timer" :class="{ 'working': working, 'not-working': !working }">{{ timer }}</span>
+      <ActionButton id="add-one-minute-button" :action="addOneMinute">&#62;</ActionButton>
+    </div>
     <div>
       <ActionButton id="start-stop-button" :action="startOrStop">{{ startOrStopLabel }}</ActionButton>
       <ActionButton id="skip-button" :action="skipCurrentPomodoro">SKIP</ActionButton>
       <ActionButton id="reset-button" :action="globalReset">RESET</ActionButton>
-      <ActionButton id="go-to-first-button" :action="goBackToFirstPomodoro" :enabled="currentPomodoroNumber != 1 || !working">➔1<sup>st</sup>
+      <ActionButton id="go-to-first-button" :action="goBackToFirstPomodoro"
+        :enabled="currentPomodoroNumber != 1 || !working">➔1<sup>st</sup>
       </ActionButton>
     </div>
     <ProgressBar :goal="goal" :totalPomodoriDone="totalPomodoriDone" :pomodoriByCycle="pomodoriByCycle">
 
     </ProgressBar>
     <div ref="todoList" :style="style" style="position: fixed">
-      <todoList></todoList>
+      <TodoList></TodoList>
     </div>
     <footer>
       <div>Smooth Pomodoro - by Nicolas Guruphat</div>
@@ -46,7 +48,7 @@ import StatistiquesBlock from './components/StatistiquesBlock.vue'
 import OptionsBlock from './components/OptionsBlock.vue'
 import ProgressBar from './components/ProgressBar.vue'
 import TodoList from './components/TodoList.vue'
-import { ref, reactive, computed } from 'vue'
+import { ref, computed } from 'vue'
 import fullscreenLogo from '@/assets/fullscreen.svg'
 import { useFullscreen, useFavicon, useDraggable } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
@@ -65,14 +67,14 @@ const { x, y, style } = useDraggable(todoList, {
 })
 
 const intervalId = ref<number | null>(null)
-function startTimer () : void {
+function startTimer (): void {
   intervalId.value = setInterval(() => {
     seconds.value--
   }, 1000)
 }
 
 const startOrStopLabel = ref<string>('START')
-function startOrStop () : void {
+function startOrStop (): void {
   if (startOrStopLabel.value === 'STOP') {
     startOrStopLabel.value = 'START'
     if (intervalId.value !== null) {
@@ -91,7 +93,7 @@ const audioEnabled = ref<boolean>(true)
 const working = ref<boolean>(true)
 const pomodoriByCycle = ref<number>(4)
 const currentPomodoroNumber = ref<number>(1)
-function switchSession () : void {
+function switchSession (): void {
   if (audioEnabled.value) {
     soundEffect.value.play()
   }
@@ -119,16 +121,16 @@ function switchSession () : void {
 const grandiantEnabled = ref<boolean>(false)
 const progressBackgroundGradiant = computed(() => {
   if (grandiantEnabled.value) {
-    const baseTime : number = working.value ? pomodoroTime.value.minutes * 60 + pomodoroTime.value.seconds : breakTime.value.small.minutes * 60 + breakTime.value.small.seconds * 60
-    const currentTime : number = baseTime - (minutes.value * 60 + seconds.value)
+    const baseTime: number = working.value ? pomodoroTime.value.minutes * 60 + pomodoroTime.value.seconds : breakTime.value.small.minutes * 60 + breakTime.value.small.seconds * 60
+    const currentTime: number = baseTime - (minutes.value * 60 + seconds.value)
     if (working.value) {
-      const progression : number = ((currentTime / baseTime) - 1 / 3) * 100 * 3 * -1
+      const progression: number = ((currentTime / baseTime) - 1 / 3) * 100 * 3 * -1
 
       return {
         background: `linear-gradient(75deg, #ffb5aa ${progression}%, #aaffb6 100%)`
       }
     } else {
-      const progression : number = ((currentTime / baseTime) - 0.2) * 100 * 5 * -1
+      const progression: number = ((currentTime / baseTime) - 0.2) * 100 * 5 * -1
       return {
         background: `linear-gradient(-105deg, #aaffb6 ${progression}%, #ffb5aa 100%)`
       }
@@ -147,12 +149,12 @@ const goal = ref<number>(0)
 
 const timer = computed(() => {
   checkTime()
-  const minutesToDisplay : string = minutes.value < 10 ? '0' + minutes.value : minutes.value.toString()
-  const secondsToDisplay : string = seconds.value < 10 ? '0' + seconds.value : seconds.value.toString()
+  const minutesToDisplay: string = minutes.value < 10 ? '0' + minutes.value : minutes.value.toString()
+  const secondsToDisplay: string = seconds.value < 10 ? '0' + seconds.value : seconds.value.toString()
   return minutesToDisplay + ':' + secondsToDisplay
 })
 
-function checkTime () : void {
+function checkTime (): void {
   if (minutes.value < 0) {
     switchSession()
   }
@@ -165,27 +167,27 @@ function checkTime () : void {
   }
 }
 
-function addOneMinute () : void {
+function addOneMinute (): void {
   minutes.value++
 }
 
-function removeOneMinute () : void {
+function removeOneMinute (): void {
   minutes.value--
 }
 
-function skipCurrentPomodoro () : void {
+function skipCurrentPomodoro (): void {
   minutes.value = 0
   seconds.value = 0
   seconds.value--
 }
 
-function globalReset () : void {
+function globalReset (): void {
   resetTimer()
   totalPomodoriDone.value = 0
   currentPomodoroNumber.value = 1
 }
 
-function goBackToFirstPomodoro () : void {
+function goBackToFirstPomodoro (): void {
   // go back to the first pomodoro of the current group of
   if (working.value) {
     totalPomodoriDone.value -= (currentPomodoroNumber.value - 1)
@@ -196,7 +198,7 @@ function goBackToFirstPomodoro () : void {
   resetTimer()
 }
 
-function resetTimer () : void {
+function resetTimer (): void {
   minutes.value = pomodoroTime.value.minutes
   seconds.value = pomodoroTime.value.seconds
   working.value = true
@@ -204,7 +206,7 @@ function resetTimer () : void {
 
 const icon = useFavicon()
 
-function changeIcon (color : string) : void {
+function changeIcon (color: string): void {
   switch (color) {
     case 'green':
       icon.value = 'greenTomato.png'
@@ -294,23 +296,23 @@ a {
   color: #00308F;
 }
 
-#fullscreen-logo{
+#fullscreen-logo {
   position: absolute;
   bottom: 5px;
   left: 5px;
-  height:50px;
+  height: 50px;
   z-index: 2;
 }
 
-#add-one-minute-button{
+#add-one-minute-button {
   display: inline;
 }
 
-#remove-one-minute-button{
+#remove-one-minute-button {
   display: inline;
 }
 
-#timer-group{
+#timer-group {
   display: flex;
   align-items: center;
   justify-content: center;

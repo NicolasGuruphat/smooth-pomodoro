@@ -15,32 +15,32 @@
     </div>
 </template>
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import { ref } from 'vue'
+import { useStorage } from '@vueuse/core'
 
 const taskToAdd = ref('')
-const taskList: {[index: string]:boolean} = reactive({ })
+const taskList = useStorage<{[index: string]:boolean}>('taskList', { }, localStorage)
 
 const addToListInput = ref<HTMLElement | null>()
 
 const addToList = async () : Promise<void> => {
   if (addToListInput.value == null) return
-  if (taskList[taskToAdd.value] !== undefined || !taskToAdd.value.trim().length) {
+  if (taskList.value[taskToAdd.value] !== undefined || !taskToAdd.value.trim().length) {
     addToListInput.value.style.border = '2px dashed red'
     await new Promise(resolve => setTimeout(resolve, 1000))
     addToListInput.value.style.border = ''
     return
   }
-  taskList[taskToAdd.value] = false
+  taskList.value[taskToAdd.value] = false
   taskToAdd.value = ''
 }
 
 const removeFromList = (j : string) : void => {
-  console.log(j)
-  delete taskList[j]
+  delete taskList.value[j]
 }
 
 const select = (j : string) : void => {
-  taskList[j] = !taskList[j]
+  taskList.value[j] = !taskList.value[j]
 }
 </script>
 <style scoped>

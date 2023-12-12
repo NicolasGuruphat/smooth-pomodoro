@@ -1,17 +1,20 @@
 <template>
-    <div id="todo-list">
-        <div>Task List {{ isTaskListEmpty ? "📭" : "📬"  }}</div>
-        <input ref='addToListInput' v-model="taskToAdd" type="text" id="add-to-list-input"/><button id="add-to-list-button" @click="addToList()">🔵</button>
-        <div v-for="(selected, task, i)  in taskList" :key="i" id="task-list" >
-            <span class="button-group">
-                <button @click="removeFromList(task)">❌</button>
-                <button @click="select(task)">{{ selected ? "✅":"🟩" }}</button>
-            </span>
-            <span  ref="itemRefs" :class="{'selected':selected}" >
-                {{ task }}
-            </span>
-        </div>
+  <div id="todo-list">
+    <h2>Task List {{ isTaskListEmpty ? "📭" : "📬" }}</h2>
+    <input ref='addToListInput' v-model="taskToAdd" type="text" id="add-to-list-input" /><button id="add-to-list-button"
+      @click="addToList()">🔵</button>
+    <div id="task-list">
+      <div v-for="(selected, task, i)  in taskList" :key="i" class="task">
+        <span class="button-group">
+          <button @click="removeFromList(task)">❌</button>
+          <button @click="select(task)">{{ selected ? "✅" : "🟩" }}</button>
+        </span>
+        <span ref="itemRefs" :class="{ 'selected': selected }">
+          {{ task }}
+        </span>
+      </div>
     </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -19,11 +22,11 @@ import { computed, ref } from 'vue'
 import { useStorage } from '@vueuse/core'
 
 const taskToAdd = ref('')
-const taskList = useStorage<{[index: string | number]:boolean}>('taskList', { }, localStorage)
+const taskList = useStorage<{ [index: string | number]: boolean }>('taskList', {}, localStorage)
 
 const addToListInput = ref<HTMLElement | null>()
 
-const addToList = async () : Promise<void> => {
+const addToList = async (): Promise<void> => {
   if (addToListInput.value == null) return
   if (taskList.value[taskToAdd.value] !== undefined || !taskToAdd.value.trim().length) {
     addToListInput.value.style.border = '2px dashed red'
@@ -35,11 +38,11 @@ const addToList = async () : Promise<void> => {
   taskToAdd.value = ''
 }
 
-const removeFromList = (index : string | number) : void => {
+const removeFromList = (index: string | number): void => {
   delete taskList.value[index]
 }
 
-const select = (index : string | number) : void => {
+const select = (index: string | number): void => {
   taskList.value[index] = !taskList.value[index]
 }
 
@@ -54,37 +57,54 @@ const isTaskListEmpty = computed(() => {
 
 </script>
 <style scoped>
-.selected{
-    color:green;
-    text-decoration: line-through;
-}
-#todo-list{
-    border:2px dashed black;
-    border-radius: 0.5rem;
-    cursor: move;
-    background: rgba(255, 255, 255, 0.5);
-    padding:0.5rem;
+h2 {
+  font-size: 1.25em;
+  margin: 0;
+  font-weight: 550;
 }
 
-.button-group{
-    margin-right:1rem;
+.selected {
+  color: green;
+  text-decoration: line-through;
+}
+
+#todo-list {
+  border: 2px dashed black;
+  border-radius: 0.5rem;
+  cursor: move;
+  background: rgba(255, 255, 255, 0.5);
+  padding: 0.6rem 1rem;
+}
+
+.button-group {
+  margin-right: 1rem;
 }
 
 button {
-    border:none;
-    background-color: transparent;
-    cursor: pointer;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
 }
 
 #add-to-list-input {
-    border:2px dashed black;
-    background-color: transparent;
-    border-radius: 0.5rem;
-    margin-left:1rem;
+  border: 2px dashed black;
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 0.5rem;
+  margin: 0.5rem 0;
 }
 
-#task-list{
-    margin-left:1rem;
-    text-align: left;
+#task-list {
+  text-align: left;
 }
-</style>
+
+.task {
+  background: rgb(252, 252, 252);
+  opacity: 0.7;
+  border-radius: 1rem;
+  padding: 0.2rem;
+  margin: 0.2rem 0;
+}
+
+#add-to-list-button {
+  padding-right: 0;
+}</style>

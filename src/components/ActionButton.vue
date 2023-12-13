@@ -30,12 +30,12 @@ export default {
 }
 
 .base-button:hover{
-  transition: transform 300ms ease-in-out;
-  transform:scale(1.2)
+  transition: transform 200ms ease-in-out;
+  transform:scale(1.1)
 }
 
 .base-button:not(:hover){
-  transition: transform 300ms ease-in-out;
+  transition: transform 200ms ease-in-out;
   transform:scale(1)
 }
 </style>

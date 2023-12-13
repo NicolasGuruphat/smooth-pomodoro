@@ -3,9 +3,9 @@
     <StatistiquesBlock class="stats-block" :currentPomodoroNumber="currentPomodoroNumber"
       :pomodoriByCycle="pomodoriByCycle" :totalPomodoriDone="totalPomodoriDone" :goal="goal" :timer="timer">
     </StatistiquesBlock>
-    <OptionsBlock class="options-block" :pomodoriByCycle="pomodoriByCycle" :totalPomodoriDone="totalPomodoriDone"
-      :goal="goal" :grandiantEnabled="grandiantEnabled" :audioEnabled="audioEnabled"
-      @updatePomodoriByCycle="($event: number) => pomodoriByCycle = $event"
+    <OptionsBlock class="options-block" v-model:showTodo="showTodo" :pomodoriByCycle="pomodoriByCycle"
+      :totalPomodoriDone="totalPomodoriDone" :goal="goal" :grandiantEnabled="grandiantEnabled"
+      :audioEnabled="audioEnabled" @updatePomodoriByCycle="($event: number) => pomodoriByCycle = $event"
       @updateGoal="($event: number) => goal = $event"
       @updateGradiantEnabled="($event: boolean) => grandiantEnabled = $event"
       @updateAudioEnabled="($event: boolean) => audioEnabled = $event">
@@ -28,7 +28,7 @@
     <ProgressBar :goal="goal" :totalPomodoriDone="totalPomodoriDone" :pomodoriByCycle="pomodoriByCycle">
 
     </ProgressBar>
-    <div ref="todoList" :style="style" style="position: fixed">
+    <div ref="todoList" :style="style" style="position: fixed" v-show="showTodo">
       <TodoList></TodoList>
     </div>
     <footer>
@@ -54,6 +54,8 @@ import { useFullscreen, useFavicon, useDraggable } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 
 const app = ref(null)
+
+const showTodo = ref<boolean>(true)
 
 const store = useParameters()
 const { pomodoroTime, breakTime } = storeToRefs(store)
@@ -231,6 +233,10 @@ function changeIcon (color: string): void {
   text-align: center;
 }
 
+button:hover {
+  cursor: pointer
+}
+
 .working {
   color: #cc1b00
 }
@@ -260,7 +266,7 @@ function changeIcon (color: string): void {
   margin-top: 5px;
   margin-right: 5px;
   right: 0;
-  font-size: 20px;
+  font-size: 1.25rem;
   border: none;
   color: rgba(0, 0, 0, 0.8)
 }

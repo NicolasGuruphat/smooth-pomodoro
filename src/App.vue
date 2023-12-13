@@ -10,12 +10,14 @@
       @updateGradiantEnabled="($event: boolean) => grandiantEnabled = $event"
       @updateAudioEnabled="($event: boolean) => audioEnabled = $event">
     </OptionsBlock>
-    <img :style="[isFullscreen ? 'opacity:0.5' : 'opacity:1']" id="fullscreen-logo" @click="toggle" :src="fullscreenLogo"
-      alt="fullscreen-logo" />
+    <button :style="[isFullscreen ? 'opacity:0.5' : 'opacity:1']" id="fullscreen-button" @click="toggle" >
+      <img id="fullscreen-logo" :src="fullscreenLogo"
+        alt="fullscreen-logo" />
+    </button>
     <div id="timer-group">
-      <ActionButton id="remove-one-minute-button" :action="removeOneMinute">&#60;</ActionButton>
+      <ActionButton class="minute-button" :action="removeOneMinute">&#60;</ActionButton>
       <span id="timer" :class="{ 'working': working, 'not-working': !working }">{{ timer }}</span>
-      <ActionButton id="add-one-minute-button" :action="addOneMinute">&#62;</ActionButton>
+      <ActionButton class="minute-button" :action="addOneMinute">&#62;</ActionButton>
     </div>
     <div>
       <ActionButton id="start-stop-button" :action="startOrStop">{{ startOrStopLabel }}</ActionButton>
@@ -234,9 +236,12 @@ function changeIcon (color: string): void {
 }
 
 button:hover {
-  cursor: pointer
+  cursor: pointer;
 }
-
+button{
+  border:none;
+  background: transparent;
+}
 .working {
   color: #cc1b00
 }
@@ -302,20 +307,20 @@ a {
   color: #00308F;
 }
 
-#fullscreen-logo {
+#fullscreen-button {
   position: absolute;
   bottom: 5px;
   left: 5px;
-  height: 50px;
   z-index: 2;
 }
 
-#add-one-minute-button {
-  display: inline;
+#fullscreen-logo{
+  height: 50px;
 }
 
-#remove-one-minute-button {
+.minute-button{
   display: inline;
+  margin-top: 1.5vh;
 }
 
 #timer-group {

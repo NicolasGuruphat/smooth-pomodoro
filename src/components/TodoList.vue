@@ -6,20 +6,23 @@
       <button type="submit" id="add-to-list-button">🔵</button>
     </form>
     <div id="task-list">
-      <div v-for="(selected, task, i)  in taskList" :key="i" class="task">
+      <div v-for="(validated, task, i)  in taskList" :key="i" class="task">
         <span class="button-group">
           <button @click="removeFromList(task)">❌</button>
-          <button @click="select(task)">{{ selected ? "✅" : "🟩" }}</button>
+          <button @click="validate(task)">{{ validated ? "✅" : "🟩" }}</button>
         </span>
-        <span ref="itemRefs" :class="{ 'selected': selected }">
+        <span ref="itemRefs" :class="{ 'validated': validated }" @click="select(task)">
           {{ task }}
+        </span>
+        <span v-if="selectedTask === task">
+          💎
         </span>
       </div>
     </div>
     <div v-if="!isTaskListEmpty" style="text-align: left; padding:0.2rem">
       <button @click='emptyList'>🗑️</button>
-      <span :style="{'color': completedTasks === totalTasks ? 'green' : 'black'}">
-        {{completedTasks}}/{{totalTasks}}
+      <span :style="{ 'color': completedTasks === totalTasks ? 'green' : 'black' }">
+        {{ completedTasks }}/{{ totalTasks }}
         <span v-if='completedTasks === totalTasks'>🎉🐲🐙🦞🐟</span>
       </span>
     </div>
@@ -29,6 +32,10 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useStorage } from '@vueuse/core'
+
+const props = defineProps(['selectedTask'])
+
+const emits = defineEmits(['update:selectedTask'])
 
 const taskToAdd = ref('')
 const taskList = useStorage<{ [index: string | number]: boolean }>('taskList', {}, localStorage)
@@ -55,14 +62,23 @@ const totalTasks = computed(() => {
   return Object.values(taskList.value).length
 })
 
-const removeFromList = (index: string | number): void => {
-  delete taskList.value[index]
+const removeFromList = (task: string | number): void => {
+  delete taskList.value[task]
 }
 
-const select = (index: string | number): void => {
-  taskList.value[index] = !taskList.value[index]
+const validate = (task: string | number): void => {
+  taskList.value[task] = !taskList.value[task]
+  if (task === props.selectedTask && this !== null) {
+    emits('update:selectedTask', null)
+  }
 }
-
+const select = (task: string | number): void => {
+  if (props.selectedTask === task) {
+    emits('update:selectedTask', null)
+  } else if (!taskList.value[task]) {
+    emits('update:selectedTask', task)
+  }
+}
 const emptyList = (): void => {
   taskList.value = {}
 }
@@ -79,7 +95,6 @@ const isThereUncompletedTask = computed(() => {
   }
   return true
 })
-
 </script>
 <style scoped>
 h2 {
@@ -88,7 +103,7 @@ h2 {
   font-weight: 550;
 }
 
-.selected {
+.validated {
   color: green;
   text-decoration: line-through;
 }

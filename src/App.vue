@@ -18,6 +18,8 @@
       <span id="timer" ref="clock" :class="{ 'working': working, 'not-working': !working }">{{ timer }}</span>
       <ActionButton class="minute-button" :action="addOneMinute">&#62;</ActionButton>
     </div>
+    <div v-if="selectedTask !== null" class="focus-label">Focus on : {{ selectedTask }}</div>
+    <div v-else class="focus-label">Click on a task to select it</div>
     <div>
       <ActionButton id="start-stop-button" :action="startOrStop">{{ startOrStopLabel }}</ActionButton>
       <ActionButton id="skip-button" :action="skipCurrentPomodoro">SKIP</ActionButton>
@@ -30,7 +32,7 @@
 
     </ProgressBar>
     <div ref="todoList" :style="style" style="position: fixed" v-show="showTodo">
-      <TodoList></TodoList>
+      <TodoList v-model:selectedTask="selectedTask" />
     </div>
     <footer>
       <div>Smooth Pomodoro - by Nicolas Guruphat</div>
@@ -57,6 +59,7 @@ import { storeToRefs } from 'pinia'
 const app = ref(null)
 
 const showTodo = ref<boolean>(true)
+const selectedTask = ref<string | null>(null)
 
 const store = useParameters()
 const { pomodoroTime, breakTime } = storeToRefs(store)
@@ -362,5 +365,10 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+.focus-label {
+  font-style: italic;
+  color:grey;
+  font-size: 1.5rem;
 }
 </style>

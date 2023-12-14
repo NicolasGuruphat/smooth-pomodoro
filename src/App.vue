@@ -18,7 +18,7 @@
       <span id="timer" ref="clock" :class="{ 'working': working, 'not-working': !working }">{{ timer }}</span>
       <ActionButton class="minute-button" :action="addOneMinute">&#62;</ActionButton>
     </div>
-    <div v-if="selectedTask !== null" class="focus-label">Focus on : {{ selectedTask }}</div>
+    <div v-if="selectedTask !== null" class="focus-label">Focus on : <span id="selected-task">{{ selectedTask }}</span></div>
     <div v-else class="focus-label">Click on a task to select it</div>
     <div>
       <ActionButton id="start-stop-button" :action="startOrStop">{{ startOrStopLabel }}</ActionButton>
@@ -36,9 +36,6 @@
     </div>
     <footer>
       <div>Smooth Pomodoro - by Nicolas Guruphat</div>
-      <a href="https://www.flaticon.com/authors/pixel-perfect" title="tomato icons">Tomato icons created by Pixel perfect
-        - Flaticon</a>
-      <br>
       <a href="https://freesound.org/people/InspectorJ/sounds/411575/">Sound effect by InspectorJ - Freesound</a>
     </footer>
   </div>
@@ -370,5 +367,9 @@ a {
   font-style: italic;
   color:grey;
   font-size: 1.5rem;
+}
+#selected-task {
+  text-decoration: underline;
+  /* font-weight: bold; */
 }
 </style>

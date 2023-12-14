@@ -4,9 +4,9 @@
       <summary class="block-opener" style="list-style-type: '⚙️'"></summary>
       <div>
         <div class="option">
-          <span class="info-label">🍅 Number of pomodori by cycle : <span
-              class="info-value">{{ pomodoriByCycle }}</span></span>
+          <span class="info-label">🍅 Number of pomodori by cycle</span>
           <span class="stat-selector">
+          <span class="info-value">{{ pomodoriByCycle }}</span>
             <button class="stat-selector-button"
               :class="{ 'disabled': pomodoriByCycle == 1, 'enabled-selector': pomodoriByCycle != 1, 'disabled-selector': pomodoriByCycle == 1 }"
               @click="$emit('updatePomodoriByCycle', pomodoriByCycle - 1)">-</button>
@@ -15,8 +15,9 @@
           </span>
         </div>
         <div class="option">
-          <span class="info-label">🎯 Pomodori goal : <span class="info-value">{{ goal }}</span></span>
+          <span class="info-label">🎯 Pomodori goal</span>
           <span class="stat-selector">
+            <span class="info-value">{{ goal }}</span>
             <button class="stat-selector-button"
               :class="{ 'disabled': goal == 0, 'enabled-selector': goal != 0, 'disabled-selector': goal == 0 }"
               @click="$emit('updateGoal', goal - 1)" :disabled="goal == 0">-</button>
@@ -37,41 +38,37 @@
         </div>
         <details class="option">
           <summary class="info-label block-opener">⏲️ Timer options (in minutes)</summary>
-          <br>
           <ul>
-            <li>
-              <div class="option">
-                <span class="info-label">Pomodoro : <span class="info-value">{{ pomodoroTime.minutes }}</span></span>
+            <li class="option">
+                <span class="info-label">Pomodoro</span>
                 <span class="stat-selector">
+                  <span class="info-value">{{ pomodoroTime.minutes }}</span>
                   <button class="stat-selector-button"
                     :class="{ 'disabled': pomodoroTime.minutes == 1, 'enabled-selector': pomodoroTime.minutes != 1, 'disabled-selector': pomodoroTime.minutes == 1 }"
                     @click="pomodoroTime.minutes -= 1" :disabled="pomodoroTime.minutes == 0">-</button>
                   <button class="stat-selector-button enabled-selector" @click="pomodoroTime.minutes += 1">+</button>
                 </span>
-              </div>
             </li>
-            <li>
-              <div class="option">
-                <span class="info-label">Small break : <span class="info-value">{{ breakTime.small.minutes
-                }}</span></span>
+            <li class="option">
+                <span class="info-label">Small break</span>
                 <span class="stat-selector">
+                  <span class="info-value">{{ breakTime.small.minutes
+                }}</span>
                   <button class="stat-selector-button"
                     :class="{ 'disabled': breakTime.small.minutes == 1, 'enabled-selector': breakTime.small.minutes != 1, 'disabled-selector': breakTime.small.minutes == 1 }"
                     @click="breakTime.small.minutes -= 1" :disabled="breakTime.small.minutes == 0">-</button>
                   <button class="stat-selector-button enabled-selector" @click="breakTime.small.minutes += 1">+</button>
                 </span>
-              </div>
             </li>
-            <li>
-              <div class="option">
-                <span class="info-label">Big break : <span class="info-value">{{ breakTime.big.minutes }}</span></span>
+            <li class="option">
+                <span class="info-label">Big break</span>
                 <span class="stat-selector">
+                  <span class="info-value">{{ breakTime.big.minutes }}</span>
                   <button class="stat-selector-button"
                     :class="{ 'disabled': breakTime.big.minutes == 1, 'enabled-selector': breakTime.big.minutes != 1, 'disabled-selector': breakTime.big.minutes == 1 }"
                     @click="breakTime.big.minutes -= 1" :disabled="breakTime.big.minutes == 0">-</button>
                   <button class="stat-selector-button enabled-selector" @click="breakTime.big.minutes += 1">+</button>
                 </span>
-              </div>
             </li>
           </ul>
         </details>
@@ -131,11 +128,15 @@ watch(audioEnabledOption, (newValue: boolean) => {
 .option {
   width: 400px;
   height: 30px;
+  background: rgba(252, 252, 252, 0.7);
+  border-radius: 1rem;
+  padding: 0.2rem 0.4rem;
+  margin: 0.2rem 0 ;
 }
 
 .stat-selector {
   display: inline-block;
-  right: 0;
+  right: 0.4rem;
   position: absolute;
 }
 
@@ -155,6 +156,9 @@ watch(audioEnabledOption, (newValue: boolean) => {
   color: rgba(252, 252, 252, 1);
 }
 
+.info-value {
+  margin-right: 0.5rem;
+}
 .enabled-selector {
   background-color: rgba(252, 252, 252, 0.5);
   color: rgba(0, 0, 0, 1);
@@ -166,9 +170,15 @@ watch(audioEnabledOption, (newValue: boolean) => {
 .block-opener:hover{
   cursor: pointer;
 }
+li:before{
+  content:"⏱️ "
+}
+li.option{
+  width: 100%;
+}
 ul {
-  list-style: "⏱️";
-  margin: 0;
+  list-style: none;
+  margin: 1rem 0 0 0 ;
 }
 
 #open-todo-button {

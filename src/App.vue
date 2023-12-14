@@ -10,13 +10,12 @@
       @updateGradiantEnabled="($event: boolean) => grandiantEnabled = $event"
       @updateAudioEnabled="($event: boolean) => audioEnabled = $event">
     </OptionsBlock>
-    <button :style="[isFullscreen ? 'opacity:0.5' : 'opacity:1']" id="fullscreen-button" @click="toggle" >
-      <img id="fullscreen-logo" :src="fullscreenLogo"
-        alt="fullscreen-logo" />
+    <button :style="[isFullscreen ? 'opacity:0.5' : 'opacity:1']" id="fullscreen-button" @click="toggle">
+      <img id="fullscreen-logo" :src="fullscreenLogo" alt="fullscreen-logo" />
     </button>
     <div id="timer-group">
       <ActionButton class="minute-button" :action="removeOneMinute">&#60;</ActionButton>
-      <span id="timer" :class="{ 'working': working, 'not-working': !working }">{{ timer }}</span>
+      <span id="timer" ref="clock" :class="{ 'working': working, 'not-working': !working }">{{ timer }}</span>
       <ActionButton class="minute-button" :action="addOneMinute">&#62;</ActionButton>
     </div>
     <div>
@@ -66,43 +65,80 @@ const { isFullscreen, toggle } = useFullscreen(app)
 
 const todoList = ref<HTMLElement | null>(null)
 
+const clock = ref<HTMLElement | null>(null)
+
 const { x, y, style } = useDraggable(todoList, {
   initialValue: { x: 40, y: 40 }
 })
 
 const intervalId = ref<number | null>(null)
-function startTimer (): void {
+const startTimer = (): void => {
   intervalId.value = setInterval(() => {
     seconds.value--
   }, 1000)
 }
+const stopTimer = (): void => {
+  if (intervalId.value !== null) {
+    clearInterval(intervalId.value)
+    intervalId.value = null
+  }
+}
 
-const startOrStopLabel = ref<string>('START')
+const startOrStopLabel = ref<'START' | 'STOP'>('START')
 function startOrStop (): void {
   if (startOrStopLabel.value === 'STOP') {
     startOrStopLabel.value = 'START'
-    if (intervalId.value !== null) {
-      clearInterval(intervalId.value)
-      intervalId.value = null
-    }
+    stopTimer()
+    startBlink()
   } else {
     startOrStopLabel.value = 'STOP'
+    stopBlink()
     startTimer()
   }
 }
 
+const blinkIntervalId = ref<number | null>(null)
+const startBlink = (): void => {
+  blinkIntervalId.value = setInterval(() => {
+    if (clock.value == null) {
+      return
+    }
+    if (clock.value.style.color === 'orange') {
+      clock.value.style.color = 'red'
+    } else {
+      clock.value.style.color = 'orange'
+    }
+  }, 1000)
+}
+
+const stopBlink = (): void => {
+  if (blinkIntervalId.value !== null) {
+    clearInterval(blinkIntervalId.value)
+    intervalId.value = null
+    if (clock.value == null) {
+      return
+    }
+    if (session.value === 'WORK') {
+      clock.value.style.color = 'red'
+    } else {
+      clock.value.style.color = 'green'
+    }
+  }
+}
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const soundEffect = ref(new Audio(require('./assets/gong_hit.wav')))
 const audioEnabled = ref<boolean>(true)
 const working = ref<boolean>(true)
 const pomodoriByCycle = ref<number>(4)
 const currentPomodoroNumber = ref<number>(1)
+const session = ref<'WORK' | 'BREAK'>('WORK')
 function switchSession (): void {
   if (audioEnabled.value) {
     soundEffect.value.play()
   }
   if (working.value) {
     // switch to pause session
+    session.value = 'BREAK'
     changeIcon('green')
     if (currentPomodoroNumber.value === pomodoriByCycle.value) {
       minutes.value = breakTime.value.big.minutes
@@ -113,8 +149,9 @@ function switchSession (): void {
     }
     totalPomodoriDone.value += 1
   } else {
-    changeIcon('red')
     // switch to work session
+    session.value = 'WORK'
+    changeIcon('red')
     currentPomodoroNumber.value = (currentPomodoroNumber.value) % pomodoriByCycle.value + 1
     minutes.value = pomodoroTime.value.minutes
     seconds.value = pomodoroTime.value.seconds
@@ -192,7 +229,7 @@ function globalReset (): void {
 }
 
 function goBackToFirstPomodoro (): void {
-  // go back to the first pomodoro of the current group of
+  // go back to the first pomodoro of the current cycle
   if (working.value) {
     totalPomodoriDone.value -= (currentPomodoroNumber.value - 1)
   } else {
@@ -238,10 +275,12 @@ function changeIcon (color: string): void {
 button:hover {
   cursor: pointer;
 }
-button{
-  border:none;
+
+button {
+  border: none;
   background: transparent;
 }
+
 .working {
   color: #cc1b00
 }
@@ -310,11 +349,11 @@ a {
   z-index: 2;
 }
 
-#fullscreen-logo{
+#fullscreen-logo {
   height: 50px;
 }
 
-.minute-button{
+.minute-button {
   display: inline;
   margin-top: 1.5vh;
 }

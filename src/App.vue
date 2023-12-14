@@ -287,10 +287,6 @@ button{
   color: rgba(0, 0, 0, 0.8)
 }
 
-.info-label {
-  float: left;
-}
-
 .info-value {
   text-decoration: underline;
 }

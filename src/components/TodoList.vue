@@ -122,8 +122,7 @@ button {
 }
 
 .task {
-  background: rgb(252, 252, 252);
-  opacity: 0.7;
+  background: rgba(252, 252, 252, 0.7);
   border-radius: 1rem;
   padding: 0.2rem;
   margin: 0.2rem 0;

@@ -11,11 +11,13 @@
           <button @click="removeFromList(task)">❌</button>
           <button @click="validate(task)">{{ validated ? "✅" : "🟩" }}</button>
         </span>
-        <span ref="itemRefs" :class="{ 'validated': validated }" @click="select(task)">
-          {{ task }}
-        </span>
-        <span v-if="selectedTask === task">
-          💎
+        <span class="task-label" @click="select(task)">
+          <span ref="itemRefs" :class="{ 'validated': validated }">
+            {{ task }}
+          </span>
+          <span v-if="selectedTask === task">
+            💎
+          </span>
         </span>
       </div>
     </div>
@@ -145,5 +147,9 @@ button {
 
 #add-to-list-button {
   padding-right: 0;
+}
+
+.task-label:hover {
+  cursor: pointer;
 }
 </style>

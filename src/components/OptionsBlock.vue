@@ -22,8 +22,8 @@
               :class="{ 'disabled': goal == 0, 'enabled-selector': goal != 0, 'disabled-selector': goal == 0 }"
               @click="$emit('updateGoal', goal - 1)" :disabled="goal == 0">-</button>
             <button class="stat-selector-button"
-                    :class="{ 'disabled': goal == 1000, 'enabled-selector': goal != 1000, 'disabled-selector': goal == 1000 }"
-                    @click="$emit('updateGoal', goal + 1)" :disabled="goal == 10">+</button>
+                    :class="{ 'disabled': goal == 100, 'enabled-selector': goal != 100, 'disabled-selector': goal == 100 }"
+                    @click="$emit('updateGoal', goal + 1)" :disabled="goal == 100">+</button>
           </span>
         </div>
         <div class="option">

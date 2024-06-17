@@ -15,7 +15,7 @@
     </button>
     <div id="timer-group">
       <ActionButton class="minute-button" id="remove-one-minute-button" :action="removeOneMinute">&#60;</ActionButton>
-      <span id="timer" ref="clock" :class="{ 'working': working, 'not-working': !working , 'blink': blinking}">{{ timer }}</span>
+      <span id="timer" ref="clock" :class="{ 'working': working, 'not-working': !working , 'blink': blink}">{{ timer }}</span>
       <ActionButton class="minute-button" id="add-one-minute-button" :action="addOneMinute">&#62;</ActionButton>
     </div>
     <div v-if="selectedTask !== null" class="focus-label">Focus on : <span id="selected-task">{{ selectedTask }}</span></div>
@@ -51,7 +51,7 @@ import StatistiquesBlock from './components/StatistiquesBlock.vue'
 import OptionsBlock from './components/OptionsBlock.vue'
 import ProgressBar from './components/ProgressBar.vue'
 import TodoList from './components/TodoList.vue'
-import { ref, computed } from 'vue'
+import { ref, computed, watchEffect } from 'vue'
 import fullscreenLogo from '@/assets/fullscreen.svg'
 import { useFullscreen, useFavicon, useDraggable } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
@@ -101,27 +101,31 @@ function startOrStop (): void {
 }
 
 const blinkIntervalId = ref<number | null>(null)
+const blink = ref(true)
 const blinking = ref(true)
 const startBlink = (): void => {
+  blinking.value = true
   blinkIntervalId.value = setInterval(() => {
     if (clock.value == null) {
       return
     }
-    blinking.value = !blinking.value
+    blink.value = !blink.value
   }, 1000)
 }
 startBlink()
-
 const stopBlink = (): void => {
   if (blinkIntervalId.value !== null) {
     clearInterval(blinkIntervalId.value)
     intervalId.value = null
+
     if (clock.value == null) {
       return
     }
+    blink.value = false
     blinking.value = false
   }
 }
+
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const soundEffect = ref<HTMLMediaElement>(new Audio(require('./assets/gong_hit.wav')))
 const audioEnabled = ref<boolean>(true)
@@ -134,7 +138,6 @@ function switchSession (): void {
   }
   if (working.value) {
     // switch to pause session
-    changeIcon('green')
     if (currentPomodoroNumber.value === pomodoriByCycle.value) {
       minutes.value = breakTime.value.big.minutes
       seconds.value = breakTime.value.big.seconds
@@ -145,7 +148,6 @@ function switchSession (): void {
     totalPomodoriDone.value += 1
   } else {
     // switch to work session
-    changeIcon('red')
     currentPomodoroNumber.value = (currentPomodoroNumber.value) % pomodoriByCycle.value + 1
     minutes.value = pomodoroTime.value.minutes
     seconds.value = pomodoroTime.value.seconds
@@ -239,6 +241,7 @@ function resetTimer (): void {
 }
 
 const icon = useFavicon()
+icon.value = 'orangeTomato.png'
 
 function changeIcon (color: string): void {
   switch (color) {
@@ -248,8 +251,22 @@ function changeIcon (color: string): void {
     case 'red':
       icon.value = 'redTomato.png'
       break
+    case 'orange':
+      icon.value = 'orangeTomato.png'
+      break
   }
 }
+watchEffect(() => {
+  if (blinking.value) {
+    changeIcon('orange')
+  } else {
+    if (working.value) {
+      changeIcon('red')
+    } else {
+      changeIcon('green')
+    }
+  }
+})
 </script>
 
 <style>

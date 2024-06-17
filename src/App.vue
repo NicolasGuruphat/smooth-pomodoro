@@ -14,12 +14,12 @@
       <img id="fullscreen-logo" :src="fullscreenLogo" alt="fullscreen-logo" />
     </button>
     <div id="timer-group">
-      <ActionButton class="minute-button" :action="removeOneMinute">&#60;</ActionButton>
-      <span id="timer" ref="clock" :class="{ 'working': working, 'not-working': !working }">{{ timer }}</span>
-      <ActionButton class="minute-button" :action="addOneMinute">&#62;</ActionButton>
+      <ActionButton class="minute-button" id="remove-one-minute-button" :action="removeOneMinute">&#60;</ActionButton>
+      <span id="timer" ref="clock" :class="{ 'working': working, 'not-working': !working , 'blink': blinking}">{{ timer }}</span>
+      <ActionButton class="minute-button" id="add-one-minute-button" :action="addOneMinute">&#62;</ActionButton>
     </div>
-    <div v-if="selectedTask !== null" class="focus-label">Focus on : {{ selectedTask }}</div>
-    <div v-else class="focus-label">Click on a task to select it</div>
+    <div v-if="selectedTask !== null" class="focus-label">Focus on : <span id="selected-task">{{ selectedTask }}</span></div>
+    <div v-else class="focus-label">Click on a task to focus on it</div>
     <div>
       <ActionButton id="start-stop-button" :action="startOrStop">{{ startOrStopLabel }}</ActionButton>
       <ActionButton id="skip-button" :action="skipCurrentPomodoro">SKIP</ActionButton>
@@ -70,7 +70,7 @@ const todoList = ref<HTMLElement | null>(null)
 
 const clock = ref<HTMLElement | null>(null)
 
-const { x, y, style } = useDraggable(todoList, {
+const { style } = useDraggable(todoList, {
   initialValue: { x: 40, y: 40 }
 })
 
@@ -101,18 +101,16 @@ function startOrStop (): void {
 }
 
 const blinkIntervalId = ref<number | null>(null)
+const blinking = ref(true)
 const startBlink = (): void => {
   blinkIntervalId.value = setInterval(() => {
     if (clock.value == null) {
       return
     }
-    if (clock.value.style.color === 'orange') {
-      clock.value.style.color = 'red'
-    } else {
-      clock.value.style.color = 'orange'
-    }
+    blinking.value = !blinking.value
   }, 1000)
 }
+startBlink()
 
 const stopBlink = (): void => {
   if (blinkIntervalId.value !== null) {
@@ -121,27 +119,21 @@ const stopBlink = (): void => {
     if (clock.value == null) {
       return
     }
-    if (session.value === 'WORK') {
-      clock.value.style.color = 'red'
-    } else {
-      clock.value.style.color = 'green'
-    }
+    blinking.value = false
   }
 }
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const soundEffect = ref(new Audio(require('./assets/gong_hit.wav')))
+const soundEffect = ref<HTMLMediaElement>(new Audio(require('./assets/gong_hit.wav')))
 const audioEnabled = ref<boolean>(true)
 const working = ref<boolean>(true)
 const pomodoriByCycle = ref<number>(4)
 const currentPomodoroNumber = ref<number>(1)
-const session = ref<'WORK' | 'BREAK'>('WORK')
 function switchSession (): void {
   if (audioEnabled.value) {
     soundEffect.value.play()
   }
   if (working.value) {
     // switch to pause session
-    session.value = 'BREAK'
     changeIcon('green')
     if (currentPomodoroNumber.value === pomodoriByCycle.value) {
       minutes.value = breakTime.value.big.minutes
@@ -153,7 +145,6 @@ function switchSession (): void {
     totalPomodoriDone.value += 1
   } else {
     // switch to work session
-    session.value = 'WORK'
     changeIcon('red')
     currentPomodoroNumber.value = (currentPomodoroNumber.value) % pomodoriByCycle.value + 1
     minutes.value = pomodoroTime.value.minutes
@@ -187,7 +178,6 @@ const progressBackgroundGradiant = computed(() => {
 const minutes = ref<number>(pomodoroTime.value.minutes)
 const seconds = ref<number>(pomodoroTime.value.seconds)
 
-// let progression = ref(0);
 const totalPomodoriDone = ref<number>(0)
 const goal = ref<number>(0)
 
@@ -370,5 +360,11 @@ a {
   font-style: italic;
   color:grey;
   font-size: 1.5rem;
+}
+#selected-task {
+  text-decoration: underline;
+}
+.blink {
+  color: orange !important
 }
 </style>

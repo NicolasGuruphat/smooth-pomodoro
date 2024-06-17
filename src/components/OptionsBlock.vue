@@ -82,7 +82,7 @@
 </template>
 <script setup lang="ts">
 import { useParameters } from '@/store/Parameters'
-import { ref, watch, defineEmits, defineProps } from 'vue'
+import { ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 
 const store = useParameters()

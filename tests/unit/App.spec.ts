@@ -1,6 +1,6 @@
 
 import App from '@/App.vue'
-import { mount } from '@vue/test-utils'
+import { DOMWrapper, mount } from '@vue/test-utils'
 import StatistiquesBlock from '@/components/StatistiquesBlock.vue'
 import { setActivePinia, createPinia } from 'pinia'
 
@@ -29,7 +29,7 @@ describe('App', () => {
   })
   it('goes to the next pomodoro when the "SKIP" button is clicked', async () => {
     const wrapper = mount(App)
-    let stats : string = wrapper.findComponent(StatistiquesBlock).html()
+    let stats: string = wrapper.findComponent(StatistiquesBlock).html()
     expect(stats).toMatch(/🍅(.|\n)*1 \/ 4(.|\n)*🎯(.|\n)*0/)
 
     const skipButton = wrapper.find('#skip-button').find('button')
@@ -81,5 +81,24 @@ describe('App', () => {
     const wrapper = mount(App)
     await wrapper.find('#remove-one-minute-button').find('button').trigger('click')
     expect(wrapper.find('#timer').text()).toBe('24:00')
+  })
+  async function isBlinking (element: DOMWrapper<Element>): Promise<boolean> {
+    const blinkingBeforeWaiting = element.classes().includes('blink')
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    const blinkingAfterWaiting = element.classes().includes('blink')
+    return blinkingAfterWaiting !== blinkingBeforeWaiting
+  }
+  describe('Blinking', () => {
+    it('blinks at the init of the application', async () => {
+      const wrapper = mount(App)
+      const timer = wrapper.find('#timer')
+      expect(await isBlinking(timer)).toBe(true)
+    })
+    it('stops to blink when the start button is triggered', async () => {
+      const wrapper = mount(App)
+      const timer = wrapper.find('#timer')
+      await wrapper.find('#start-stop-button').find('button').trigger('click')
+      expect(await isBlinking(timer)).toBe(false)
+    })
   })
 })

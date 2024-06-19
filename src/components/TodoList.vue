@@ -8,6 +8,8 @@
     <div id="task-list">
       <div v-for="(task, i)  in taskList" :key="i" class="task">
         <span class="button-group">
+          <button @click="moveUp(i)">⬅️</button>
+          <button @click="moveDown(i)">➡️</button>
           <button @click="removeFromList(task)">❌</button>
           <button @click="validate(task)">{{ task.done ? "✅" : "🟩" }}</button>
         </span>
@@ -45,8 +47,6 @@ const addToListInput = ref<HTMLElement | null>()
 
 const addToList = async (): Promise<void> => {
   if (addToListInput.value == null) return
-  console.log(taskList.value.filter((task: Task) => task.name === taskToAdd.value).length === 0, taskToAdd.value.trim().length === 0)
-  console.log(taskList.value.filter((task: Task) => task.name === taskToAdd.value).length)
   if (taskList.value.filter((task: Task) => task.name === taskToAdd.value).length !== 0 || taskToAdd.value.trim().length === 0) {
     addToListInput.value.style.border = '2px dashed red'
     await new Promise(resolve => setTimeout(resolve, 1000))
@@ -57,9 +57,25 @@ const addToList = async (): Promise<void> => {
   taskToAdd.value = ''
 }
 
-// const move = (element, ) => {
-//   return
-// }
+const moveUp = (index: number): void => {
+  if (index === 0) {
+    return
+  }
+  arrayMove(taskList.value, index, index - 1)
+}
+
+const moveDown = (index: number): void => {
+  if (index + 1 === taskList.value.length) {
+    return
+  }
+  arrayMove(taskList.value, index, index + 1)
+}
+
+function arrayMove (arr: Task[], fromIndex: number, toIndex: number) :void {
+  const element = arr[fromIndex]
+  arr.splice(fromIndex, 1)
+  arr.splice(toIndex, 0, element)
+}
 
 const completedTasks = computed(() => {
   return taskList.value.filter((task: Task) => task.done).length

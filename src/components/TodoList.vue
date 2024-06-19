@@ -2,7 +2,7 @@
   <div id="todo-list" :class="{'uncompleted': isThereUncompletedTask || taskList.length == 0, 'completed': !isThereUncompletedTask && taskList.length !== 0}">
     <h2>Task List {{ isThereUncompletedTask ? "📬" : "📭" }}</h2>
     <form v-on:submit.prevent="addToList">
-      <input ref='addToListInput' v-model="taskToAdd" type="text" id="add-to-list-input" />
+      <input ref='addToListInput' v-model="taskToAdd" type="text" id="add-to-list-input" maxlength="50"/>
       <button type="submit" id="add-to-list-button">🔵</button>
     </form>
     <div id="task-list">
@@ -35,7 +35,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useStorage } from '@vueuse/core'
-import { Task } from '@/interfaces/Task.js'
+import Task from '@/interfaces/Task'
 
 const props = defineProps(['selectedTask'])
 
@@ -208,6 +208,7 @@ button {
 
 .task-name {
   padding-left: 1rem;
+  padding-right: 0.5rem;
 }
 
 .task-name:hover {

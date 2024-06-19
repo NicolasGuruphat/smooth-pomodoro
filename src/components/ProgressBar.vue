@@ -24,6 +24,11 @@
 </template>
 <script setup lang="ts">
 import { defineProps } from 'vue'
+import { useParameters } from '@/store/Parameters'
+import { storeToRefs } from 'pinia'
+
+const store = useParameters()
+const { goal, totalPomodoriDone, pomodoriByCycle } = storeToRefs(store)
 
 defineProps(['goal', 'totalPomodoriDone', 'pomodoriByCycle'])
 

@@ -9,9 +9,9 @@
           <span class="info-value">{{ pomodoriByCycle }}</span>
             <button class="stat-selector-button"
               :class="{ 'disabled': pomodoriByCycle == 1, 'enabled-selector': pomodoriByCycle != 1, 'disabled-selector': pomodoriByCycle == 1 }"
-              @click="$emit('updatePomodoriByCycle', pomodoriByCycle - 1)">-</button>
+              @click="pomodoriByCycle -= 1">-</button>
             <button class="stat-selector-button enabled-selector"
-              @click="$emit('updatePomodoriByCycle', pomodoriByCycle + 1)">+</button>
+              @click="pomodoriByCycle += 1">+</button>
           </span>
         </div>
         <div class="option">
@@ -20,22 +20,22 @@
             <span class="info-value">{{ goal }}</span>
             <button class="stat-selector-button"
               :class="{ 'disabled': goal == 0, 'enabled-selector': goal != 0, 'disabled-selector': goal == 0 }"
-              @click="$emit('updateGoal', goal - 1)" :disabled="goal == 0">-</button>
+              @click=" goal -= 1" :disabled="goal == 0">-</button>
             <button class="stat-selector-button"
                     :class="{ 'disabled': goal == 100, 'enabled-selector': goal != 100, 'disabled-selector': goal == 100 }"
-                    @click="$emit('updateGoal', goal + 1)" :disabled="goal == 100">+</button>
+                    @click=" goal += 1" :disabled="goal == 100">+</button>
           </span>
         </div>
         <div class="option">
           <span class="info-label">✨ Gradiant background</span>
           <input type="checkbox" class="stat-selector stat-selector-button enabled-selector checkbox-selector"
-            v-model="grandiantEnabledOption">
+            v-model="grandiantEnabled">
           <label for="checkbox"></label>
         </div>
         <div class="option">
           <span class="info-label">🔉 Sound effect</span>
           <input type="checkbox" class="stat-selector stat-selector-button enabled-selector checkbox-selector"
-            v-model="audioEnabledOption">
+            v-model="audioEnabled">
           <label for="checkbox"></label>
         </div>
         <details class="option">
@@ -82,49 +82,19 @@
 </template>
 <script setup lang="ts">
 import { useParameters } from '@/store/Parameters'
-import { ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 
 const store = useParameters()
-const { pomodoroTime, breakTime } = storeToRefs(store)
 
-const props = defineProps({
-  goal: {
-    type: Number,
-    required: true
-  },
-  pomodoriByCycle: {
-    type: Number,
-    required: true
-  },
-  totalPomodoriDone: {
-    type: Number,
-    required: true
-  },
-  grandiantEnabled: {
-    type: Boolean,
-    required: true
-  },
-  audioEnabled: {
-    type: Boolean,
-    required: true
-  },
+defineProps({
   showTodo: {
     type: Boolean,
     required: true
   }
 })
 
-const grandiantEnabledOption = ref(props.grandiantEnabled)
-const audioEnabledOption = ref(props.audioEnabled)
-const emits = defineEmits(['updateGradiantEnabled', 'audioEnabledOption', 'update:showTodo'])
+const { pomodoroTime, breakTime, audioEnabled, grandiantEnabled, pomodoriByCycle, goal } = storeToRefs(store)
 
-watch(grandiantEnabledOption, (newValue: boolean) => {
-  emits('updateGradiantEnabled', newValue)
-})
-watch(audioEnabledOption, (newValue: boolean) => {
-  emits('audioEnabledOption', newValue)
-})
 </script>
 <style scoped>
 .option {

@@ -3,12 +3,7 @@
     <StatistiquesBlock class="stats-block" :currentPomodoroNumber="currentPomodoroNumber"
       :pomodoriByCycle="pomodoriByCycle" :totalPomodoriDone="totalPomodoriDone" :goal="goal" :timer="timer">
     </StatistiquesBlock>
-    <OptionsBlock class="options-block" v-model:showTodo="showTodo" :pomodoriByCycle="pomodoriByCycle"
-      :totalPomodoriDone="totalPomodoriDone" :goal="goal" :grandiantEnabled="grandiantEnabled"
-      :audioEnabled="audioEnabled" @updatePomodoriByCycle="($event: number) => pomodoriByCycle = $event"
-      @updateGoal="($event: number) => goal = $event"
-      @updateGradiantEnabled="($event: boolean) => grandiantEnabled = $event"
-      @updateAudioEnabled="($event: boolean) => audioEnabled = $event">
+    <OptionsBlock class="options-block" v-model:showTodo="showTodo">
     </OptionsBlock>
     <button :style="[isFullscreen ? 'opacity:0.5' : 'opacity:1']" id="fullscreen-button" @click="toggle">
       <img id="fullscreen-logo" :src="fullscreenLogo" alt="fullscreen-logo" />
@@ -30,7 +25,7 @@
         </ActionButton>
       </div>
     </div>
-    <ProgressBar :goal="goal" :totalPomodoriDone="totalPomodoriDone" :pomodoriByCycle="pomodoriByCycle">
+    <ProgressBar>
 
     </ProgressBar>
     <div ref="todoList" :style="style" style="position: fixed" v-show="showTodo">
@@ -57,15 +52,19 @@ import { ref, computed, watchEffect } from 'vue'
 import fullscreenLogo from '@/assets/fullscreen.svg'
 import { useFullscreen, useFavicon, useDraggable } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
-import { Task } from '@/interfaces/Task.js'
+import Task from '@/interfaces/Task'
+import { useUser } from './store/User'
 
 const app = ref(null)
 
 const showTodo = ref<boolean>(true)
-const selectedTask = ref<Task>(null)
+const selectedTask = ref<Task | null>(null)
 
-const store = useParameters()
-const { pomodoroTime, breakTime } = storeToRefs(store)
+const parameters = useParameters()
+const { pomodoroTime, breakTime, audioEnabled, grandiantEnabled, pomodoriByCycle, goal } = storeToRefs(parameters)
+
+const user = useUser()
+const { currentPomodoroNumber, totalPomodoriDone, minutes, seconds } = storeToRefs(user)
 
 const { isFullscreen, toggle } = useFullscreen(app)
 
@@ -131,10 +130,7 @@ const stopBlink = (): void => {
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const soundEffect = ref<HTMLMediaElement>(new Audio(require('./assets/gong_hit.wav')))
-const audioEnabled = ref<boolean>(true)
 const working = ref<boolean>(true)
-const pomodoriByCycle = ref<number>(4)
-const currentPomodoroNumber = ref<number>(1)
 function switchSession (): void {
   if (audioEnabled.value) {
     soundEffect.value.play()
@@ -158,7 +154,6 @@ function switchSession (): void {
   working.value = !working.value
 }
 
-const grandiantEnabled = ref<boolean>(false)
 const progressBackgroundGradiant = computed(() => {
   if (grandiantEnabled.value) {
     const baseTime: number = working.value ? pomodoroTime.value.minutes * 60 + pomodoroTime.value.seconds : breakTime.value.small.minutes * 60 + breakTime.value.small.seconds * 60
@@ -179,12 +174,6 @@ const progressBackgroundGradiant = computed(() => {
     return { 'background-color': working.value ? '#ffb5aa' : '#aaffb6' }
   }
 })
-
-const minutes = ref<number>(pomodoroTime.value.minutes)
-const seconds = ref<number>(pomodoroTime.value.seconds)
-
-const totalPomodoriDone = ref<number>(0)
-const goal = ref<number>(0)
 
 const timer = computed(() => {
   checkTime()

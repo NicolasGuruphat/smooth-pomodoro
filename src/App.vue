@@ -15,7 +15,7 @@
     </button>
     <div id="timer-group">
       <ActionButton class="minute-button" id="remove-one-minute-button" :action="removeOneMinute">&#60;</ActionButton>
-      <span id="timer" ref="clock" :class="{ 'working': working, 'not-working': !working , 'blink': blink}">{{ timer }}</span>
+      <span id="timer"  ref="clock" :class="{ 'working': working, 'not-working': !working , 'blink': blink}">{{ timer }}</span>
       <ActionButton class="minute-button" id="add-one-minute-button" :action="addOneMinute">&#62;</ActionButton>
     </div>
     <div v-if="selectedTask !== null" class="focus-label">Focus on : <span id="selected-task">{{ selectedTask.name }}</span></div>
@@ -295,16 +295,21 @@ button {
 }
 
 .working {
-  color: #cc1b00
+  color: rgba(204, 27, 0, 1);
+  background-color: rgba(255, 181, 170, 0.5);
 }
 
 .not-working {
-  color: #00cc1b
+  color: rgba(0, 204, 27, 1);
+  background-color: rgba(170, 255, 182, 0.5);
 }
 
 #timer {
   font-size: 10vh;
   font-weight: bold;
+  padding: 0.2rem 1rem;
+  border-radius: 4rem;
+  margin-top: 0.25rem;
   /* -webkit-text-stroke: 1.5px var(--grey); */
 }
 

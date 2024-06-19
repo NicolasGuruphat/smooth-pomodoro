@@ -1,5 +1,5 @@
 <template>
-  <div id="todo-list" :class="{'uncompleted': isThereUncompletedTask, 'completed': !isThereUncompletedTask}">
+  <div id="todo-list" :class="{'uncompleted': isThereUncompletedTask || taskList.length == 0, 'completed': !isThereUncompletedTask && taskList.length !== 0}">
     <h2>Task List {{ isThereUncompletedTask ? "📬" : "📭" }}</h2>
     <form v-on:submit.prevent="addToList">
       <input ref='addToListInput' v-model="taskToAdd" type="text" id="add-to-list-input" />

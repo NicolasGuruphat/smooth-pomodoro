@@ -11,6 +11,7 @@
         <span class="button-group">
           <button @click="moveUp(i)">⬆️</button>
           <button @click="moveDown(i)">⬇️</button>
+          <button @click="edit(task, i)">✏️</button>
           <button @click="removeFromList(task)">❌</button>
           <button @click="validate(task)">{{ task.done ? "✅" : "🟩" }}</button>
         </span>
@@ -46,6 +47,8 @@ const taskList = useStorage<Task[]>('taskList', [], localStorage)
 
 const addToListInput = ref<HTMLElement | null>()
 
+const indexInsert = ref<number>(0)
+
 const addToList = async (): Promise<void> => {
   if (addToListInput.value == null) return
   if (taskList.value.filter((task: Task) => task.name === taskToAdd.value).length !== 0 || taskToAdd.value.trim().length === 0) {
@@ -54,7 +57,8 @@ const addToList = async (): Promise<void> => {
     addToListInput.value.style.border = ''
     return
   }
-  taskList.value.push({ name: taskToAdd.value, done: false })
+  taskList.value.splice(indexInsert.value, 0, { name: taskToAdd.value, done: false })
+  indexInsert.value = 0
   taskToAdd.value = ''
 }
 
@@ -78,6 +82,12 @@ function arrayMove (arr: Task[], fromIndex: number, toIndex: number) :void {
   arr.splice(toIndex, 0, element)
 }
 
+const edit = (task: Task, index: number): void => {
+  taskToAdd.value = task.name
+  indexInsert.value = index
+  taskList.value.splice(index, 1)
+}
+
 const completedTasks = computed(() => {
   return taskList.value.filter((task: Task) => task.done).length
 })
@@ -94,6 +104,9 @@ const removeFromList = (task: Task): void => {
   if (props.selectedTask === task) {
     emits('update:selectedTask', null)
   }
+
+  // reset indexInsert to avoid invalid index at submit
+  indexInsert.value = 0
 }
 
 const findIndexOfTask = (task: Task): number => {

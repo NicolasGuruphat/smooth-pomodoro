@@ -1,15 +1,16 @@
 <template>
-  <div id="todo-list">
+  <div id="todo-list" :class="{'uncompleted': isThereUncompletedTask, 'completed': !isThereUncompletedTask}">
     <h2>Task List {{ isThereUncompletedTask ? "📬" : "📭" }}</h2>
     <form v-on:submit.prevent="addToList">
       <input ref='addToListInput' v-model="taskToAdd" type="text" id="add-to-list-input" />
       <button type="submit" id="add-to-list-button">🔵</button>
     </form>
     <div id="task-list">
-      <div v-for="(task, i)  in taskList" :key="i" class="task">
+      <div v-for="(task, i)  in taskList" :key="i" class="task" :class="{'task-done' : task.done, 'task-undone' : !task.done }">
+        <span class="open-task-actions">☰</span>
         <span class="button-group">
-          <button @click="moveUp(i)">⬅️</button>
-          <button @click="moveDown(i)">➡️</button>
+          <button @click="moveUp(i)">⬆️</button>
+          <button @click="moveDown(i)">⬇️</button>
           <button @click="removeFromList(task)">❌</button>
           <button @click="validate(task)">{{ task.done ? "✅" : "🟩" }}</button>
         </span>
@@ -140,12 +141,38 @@ h2 {
   border: 2px dashed black;
   border-radius: 0.5rem;
   cursor: move;
-  background: rgba(255, 255, 255, 0.5);
   padding: 0.6rem 1rem;
+}
+.completed {
+  background: rgba(113, 255, 120, 0.5);
+}
+.uncompleted {
+  background: rgba(255, 255, 255, 0.5);
+
+}
+#add-to-list-button {
+  padding-right: 0;
+  font-size: 1.15rem;
+}
+
+.open-task-actions {
+  padding-left: 0.5rem;
+  cursor: pointer;
+}
+
+.open-task-actions:hover + .button-group, .button-group:hover {
+  display: block;
+  position: absolute;
 }
 
 .button-group {
-  margin-right: 1rem;
+  top:0;
+  left:0;
+  display: none;
+  background-color: rgb(253, 200, 208);
+  border-radius: 1rem;
+  padding: 0.2rem;
+  cursor:pointer;
 }
 
 button {
@@ -165,17 +192,26 @@ button {
 }
 
 .task {
-  background: rgba(252, 252, 252, 0.7);
   border-radius: 1rem;
   padding: 0.2rem;
   margin: 0.2rem 0;
+  position: relative;
+}
+.task-undone{
+  background: rgba(252, 252, 252, 0.7);
+
+}
+.task-done{
+  background: rgba(113, 255, 120, 0.7);
+
+}
+
+.task-name {
+  padding-left: 1rem;
 }
 
 .task-name:hover {
   cursor: pointer;
 }
 
-#add-to-list-button {
-  padding-right: 0;
-}
 </style>

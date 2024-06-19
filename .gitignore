@@ -24,3 +24,4 @@ pnpm-debug.log*
 
 # Ignore test-related files
 /coverage/
+.vercel

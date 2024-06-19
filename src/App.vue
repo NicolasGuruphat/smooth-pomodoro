@@ -18,15 +18,17 @@
       <span id="timer" ref="clock" :class="{ 'working': working, 'not-working': !working , 'blink': blink}">{{ timer }}</span>
       <ActionButton class="minute-button" id="add-one-minute-button" :action="addOneMinute">&#62;</ActionButton>
     </div>
-    <div v-if="selectedTask !== null" class="focus-label">Focus on : <span id="selected-task">{{ selectedTask }}</span></div>
+    <div v-if="selectedTask !== null" class="focus-label">Focus on : <span id="selected-task">{{ selectedTask.name }}</span></div>
     <div v-else class="focus-label">Click on a task to focus on it</div>
-    <div>
-      <ActionButton id="start-stop-button" :action="startOrStop">{{ startOrStopLabel }}</ActionButton>
-      <ActionButton id="skip-button" :action="skipCurrentPomodoro">SKIP</ActionButton>
-      <ActionButton id="reset-button" :action="globalReset">RESET</ActionButton>
-      <ActionButton id="go-to-first-button" :action="goBackToFirstPomodoro"
-        :enabled="currentPomodoroNumber != 1 || !working">➔1<sup>st</sup>
-      </ActionButton>
+    <div style="display: flex; justify-content: center; margin-top: 2rem;">
+      <div style="display:grid; grid-template-columns: fit-content(40%) fit-content(40%);box-sizing: border-box;">
+        <ActionButton id="start-stop-button" :action="startOrStop">{{ startOrStopLabel }}</ActionButton>
+        <ActionButton id="skip-button" :action="skipCurrentPomodoro">SKIP</ActionButton>
+        <ActionButton id="reset-button" :action="globalReset">RESET</ActionButton>
+        <ActionButton id="go-to-first-button" :action="goBackToFirstPomodoro"
+          :enabled="currentPomodoroNumber != 1 || !working">➔1<sup>st</sup>
+        </ActionButton>
+      </div>
     </div>
     <ProgressBar :goal="goal" :totalPomodoriDone="totalPomodoriDone" :pomodoriByCycle="pomodoriByCycle">
 
@@ -55,11 +57,12 @@ import { ref, computed, watchEffect } from 'vue'
 import fullscreenLogo from '@/assets/fullscreen.svg'
 import { useFullscreen, useFavicon, useDraggable } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
+import { Task } from '@/interfaces/Task.js'
 
 const app = ref(null)
 
 const showTodo = ref<boolean>(true)
-const selectedTask = ref<string | null>(null)
+const selectedTask = ref<Task>(null)
 
 const store = useParameters()
 const { pomodoroTime, breakTime } = storeToRefs(store)

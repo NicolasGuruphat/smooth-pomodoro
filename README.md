@@ -2,7 +2,7 @@
 ![App image](./readme/image.png)
 ## Project setup
 ```
-npm install
+npm install --legacy-peer-deps
 ```
 
 ### Compiles and hot-reloads for development

@@ -1,18 +1,18 @@
 <template>
   <div id="todo-list">
-    <h2>Task List {{ isThereUncompletedTask ? "📭" : "📬" }}</h2>
+    <h2>Task List {{ isThereUncompletedTask ? "📬" : "📭" }}</h2>
     <form v-on:submit.prevent="addToList">
       <input ref='addToListInput' v-model="taskToAdd" type="text" id="add-to-list-input" />
       <button type="submit" id="add-to-list-button">🔵</button>
     </form>
     <div id="task-list">
-      <div v-for="(validated, task, i)  in taskList" :key="i" class="task">
+      <div v-for="(task, i)  in taskList" :key="i" class="task">
         <span class="button-group">
           <button @click="removeFromList(task)">❌</button>
-          <button @click="validate(task)">{{ validated ? "✅" : "🟩" }}</button>
+          <button @click="validate(task)">{{ task.done ? "✅" : "🟩" }}</button>
         </span>
-        <span ref="itemRefs" :class="{ 'validated': validated }" @click="select(task)">
-          {{ task }}
+        <span ref="itemRefs" :class="{ 'validated': task.done }" class="task-name" @click="select(task)">
+          {{ task.name }}
         </span>
         <span v-if="selectedTask === task">
           💎
@@ -32,68 +32,80 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useStorage } from '@vueuse/core'
+import { Task } from '@/interfaces/Task.js'
 
 const props = defineProps(['selectedTask'])
 
 const emits = defineEmits(['update:selectedTask'])
 
-const taskToAdd = ref('')
-const taskList = useStorage<{ [index: string | number]: boolean }>('taskList', {}, localStorage)
+const taskToAdd = ref<string>('')
+const taskList = useStorage<Task[]>('taskList', [], localStorage)
 
 const addToListInput = ref<HTMLElement | null>()
 
 const addToList = async (): Promise<void> => {
   if (addToListInput.value == null) return
-  if (taskList.value[taskToAdd.value] !== undefined || !taskToAdd.value.trim().length) {
+  console.log(taskList.value.filter((task: Task) => task.name === taskToAdd.value).length === 0, taskToAdd.value.trim().length === 0)
+  console.log(taskList.value.filter((task: Task) => task.name === taskToAdd.value).length)
+  if (taskList.value.filter((task: Task) => task.name === taskToAdd.value).length !== 0 || taskToAdd.value.trim().length === 0) {
     addToListInput.value.style.border = '2px dashed red'
     await new Promise(resolve => setTimeout(resolve, 1000))
     addToListInput.value.style.border = ''
     return
   }
-  taskList.value[taskToAdd.value] = false
+  taskList.value.push({ name: taskToAdd.value, done: false })
   taskToAdd.value = ''
 }
 
+// const move = (element, ) => {
+//   return
+// }
+
 const completedTasks = computed(() => {
-  return Object.values(taskList.value).filter((value) => { return value }).length
+  return taskList.value.filter((task: Task) => task.done).length
 })
 
 const totalTasks = computed(() => {
-  return Object.values(taskList.value).length
+  return taskList.value.length
 })
 
-const removeFromList = (task: string | number): void => {
-  delete taskList.value[task]
+const removeFromList = (task: Task): void => {
+  const index = findIndexOfTask(task)
+  if (index > -1) {
+    taskList.value.splice(index, 1)
+  }
+  if (props.selectedTask === task) {
+    emits('update:selectedTask', null)
+  }
 }
 
-const validate = (task: string | number): void => {
-  taskList.value[task] = !taskList.value[task]
+const findIndexOfTask = (task: Task): number => {
+  return taskList.value.indexOf(task)
+}
+
+const validate = (task: Task): void => {
+  task.done = !task.done
   if (task === props.selectedTask && this !== null) {
     emits('update:selectedTask', null)
   }
 }
-const select = (task: string | number): void => {
+const select = (task: Task): void => {
   if (props.selectedTask === task) {
     emits('update:selectedTask', null)
-  } else if (!taskList.value[task]) {
+  } else if (!task.done) {
     emits('update:selectedTask', task)
   }
 }
 const emptyList = (): void => {
-  taskList.value = {}
+  taskList.value = []
 }
 
 const isTaskListEmpty = computed(() => {
-  return Object.values(taskList.value).length === 0
+  return taskList.value.length === 0
 })
 
 const isThereUncompletedTask = computed(() => {
-  for (const element of Object.values(taskList.value)) {
-    if (!element) {
-      return false
-    }
-  }
-  return true
+  return taskList.value.filter((task: Task) => !task.done).length !== 0
 })
 </script>
 <style scoped>
@@ -141,6 +153,10 @@ button {
   border-radius: 1rem;
   padding: 0.2rem;
   margin: 0.2rem 0;
+}
+
+.task-name:hover {
+  cursor: pointer;
 }
 
 #add-to-list-button {

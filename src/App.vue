@@ -68,7 +68,7 @@ const { isFullscreen, toggle } = useFullscreen(app)
 
 const todoList = ref<HTMLElement>(null)
 
-const clock = ref<HTMLElement>(null)
+const clock = ref<HTMLElement >(null)
 
 const { style } = useDraggable(todoList, {
   initialValue: { x: 40, y: 40 }

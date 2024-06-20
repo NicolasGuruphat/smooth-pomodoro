@@ -68,14 +68,13 @@ const { isFullscreen, toggle } = useFullscreen(app)
 
 const todoList = ref<HTMLElement | null>(null)
 
-const clock = ref<HTMLElement| null>(null)
+const clock = ref<HTMLElement | null>(null)
 
 const { style } = useDraggable(todoList, {
   initialValue: { x: 40, y: 40 }
 })
 
 const intervalId = ref<number | null>(null)
-
 const startTimer = (): void => {
   intervalId.value = setInterval(() => {
     seconds.value--

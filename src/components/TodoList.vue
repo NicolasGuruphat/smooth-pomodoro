@@ -187,6 +187,9 @@ h2 {
   padding: 0.2rem;
   cursor:pointer;
 }
+.button-group > button:not(:last-child){
+    border-right: 1px solid white;
+}
 
 button {
   border: none;

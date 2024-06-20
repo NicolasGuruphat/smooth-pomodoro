@@ -75,6 +75,7 @@ const { style } = useDraggable(todoList, {
 })
 
 const intervalId = ref<number | null>(null)
+
 const startTimer = (): void => {
   intervalId.value = setInterval(() => {
     seconds.value--

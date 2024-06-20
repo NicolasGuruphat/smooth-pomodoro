@@ -66,9 +66,9 @@ const { currentPomodoroNumber, totalPomodoriDone, minutes, seconds } = storeToRe
 
 const { isFullscreen, toggle } = useFullscreen(app)
 
-const todoList = ref<HTMLElement>(null)
+const todoList = ref<HTMLElement | null>(null)
 
-const clock = ref<HTMLElement>(null)
+const clock = ref<HTMLElement| null>(null)
 
 const { style } = useDraggable(todoList, {
   initialValue: { x: 40, y: 40 }

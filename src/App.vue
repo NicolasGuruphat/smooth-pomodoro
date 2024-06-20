@@ -25,9 +25,7 @@
         </ActionButton>
       </div>
     </div>
-    <ProgressBar>
-
-    </ProgressBar>
+    <ProgressBar />
     <div ref="todoList" :style="style" style="position: fixed" v-show="showTodo">
       <TodoList v-model:selectedTask="selectedTask" />
     </div>

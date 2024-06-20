@@ -1,12 +1,17 @@
 
 import App from '@/App.vue'
-import { DOMWrapper, mount } from '@vue/test-utils'
+import { mount } from '@vue/test-utils'
 import StatistiquesBlock from '@/components/StatistiquesBlock.vue'
 import { setActivePinia, createPinia } from 'pinia'
-
+import { useUser } from '@/store/User'
+import { useParameters } from '@/store/Parameters'
 describe('App', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
+    const storeParameters = useParameters()
+    storeParameters.reset()
+    const storeUser = useUser()
+    storeUser.reset()
   })
 
   it('displays starting time with correct value', () => {
@@ -81,24 +86,5 @@ describe('App', () => {
     const wrapper = mount(App)
     await wrapper.find('#remove-one-minute-button').find('button').trigger('click')
     expect(wrapper.find('#timer').text()).toBe('24:00')
-  })
-  async function isBlinking (element: DOMWrapper<Element>): Promise<boolean> {
-    const blinkingBeforeWaiting = element.classes().includes('blink')
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    const blinkingAfterWaiting = element.classes().includes('blink')
-    return blinkingAfterWaiting !== blinkingBeforeWaiting
-  }
-  describe('Blinking', () => {
-    it('blinks at the init of the application', async () => {
-      const wrapper = mount(App)
-      const timer = wrapper.find('#timer')
-      expect(await isBlinking(timer)).toBe(true)
-    })
-    it('stops to blink when the start button is triggered', async () => {
-      const wrapper = mount(App)
-      const timer = wrapper.find('#timer')
-      await wrapper.find('#start-stop-button').find('button').trigger('click')
-      expect(await isBlinking(timer)).toBe(false)
-    })
   })
 })

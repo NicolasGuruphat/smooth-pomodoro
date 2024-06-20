@@ -66,7 +66,7 @@ const { currentPomodoroNumber, totalPomodoriDone, minutes, seconds } = storeToRe
 
 const { isFullscreen, toggle } = useFullscreen(app)
 
-const todoList = ref<HTMLElement | null>(null)
+const todoList = ref<HTMLElement>(null)
 
 const clock = ref<HTMLElement | null>(null)
 

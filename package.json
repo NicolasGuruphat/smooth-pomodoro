@@ -15,12 +15,6 @@
     "pinia": "^2.1.6",
     "vue": "^3.2.13"
   },
-  "husky": {
-    "pre-commit": "lint-staged"
-  },
-  "lint-staged": {
-    "**/*.ts": "tsc-files --noEmit"
-  },
   "devDependencies": {
     "@types/jest": "^27.0.1",
     "@typescript-eslint/eslint-plugin": "^5.4.0",

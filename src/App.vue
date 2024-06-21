@@ -5,9 +5,6 @@
     </StatistiquesBlock>
     <OptionsBlock class="options-block" v-model:showTodo="showTodo">
     </OptionsBlock>
-    <button :style="[isFullscreen ? 'opacity:0.5' : 'opacity:1']" id="fullscreen-button" @click="toggle">
-      <img id="fullscreen-logo" :src="fullscreenLogo" alt="fullscreen-logo" />
-    </button>
     <div id="timer-group">
       <ActionButton class="minute-button" id="remove-one-minute-button" :action="removeOneMinute">&#60;</ActionButton>
       <span id="timer"  ref="clock" :class="{ 'working': working, 'not-working': !working , 'blink': blink}">{{ timer }}</span>
@@ -30,11 +27,17 @@
       <TodoList v-model:selectedTask="selectedTask" />
     </div>
     <footer>
-      <div>Smooth Pomodoro - by Nicolas Guruphat</div>
-      <a href="https://www.flaticon.com/authors/pixel-perfect" title="tomato icons">Tomato icons created by Pixel perfect
-        - Flaticon</a>
-      <br>
-      <a href="https://freesound.org/people/InspectorJ/sounds/411575/">Sound effect by InspectorJ - Freesound</a>
+      <button :style="[isFullscreen ? 'opacity:0.5' : 'opacity:1']" id="fullscreen-button" @click="toggle" style="text-align: left;">
+        <img id="fullscreen-logo" :src="fullscreenLogo" alt="fullscreen-logo" />
+      </button>
+      <div>
+        <div>Smooth Pomodoro - by Nicolas Guruphat</div>
+        <a href="https://www.flaticon.com/authors/pixel-perfect" title="tomato icons">Tomato icons created by Pixel perfect
+          - Flaticon</a>
+        <br>
+        <a href="https://freesound.org/people/InspectorJ/sounds/411575/">Sound effect by InspectorJ - Freesound</a>
+      </div>
+      <ActionButton id="clear-data-button" :action="clearData" style="text-align: right;">CLEAR DATA</ActionButton>
     </footer>
   </div>
 </template>
@@ -50,7 +53,7 @@ import { ref, computed, watchEffect } from 'vue'
 import fullscreenLogo from '@/assets/fullscreen.svg'
 import { useFullscreen, useFavicon, useDraggable } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
-import Task from '@/interfaces/Task'
+import type Task from '@/interfaces/Task'
 import { useUser } from './store/User'
 
 const app = ref(null)
@@ -59,7 +62,7 @@ const showTodo = ref<boolean>(true)
 const selectedTask = ref<Task | null>(null)
 
 const parameters = useParameters()
-const { pomodoroTime, breakTime, audioEnabled, grandiantEnabled, pomodoriByCycle, goal } = storeToRefs(parameters)
+const { pomodoroTime, breakTime, audioEnabled, gradiantEnabled, pomodoriByCycle, goal } = storeToRefs(parameters)
 
 const user = useUser()
 const { currentPomodoroNumber, totalPomodoriDone, minutes, seconds } = storeToRefs(user)
@@ -153,7 +156,7 @@ function switchSession (): void {
 }
 
 const progressBackgroundGradiant = computed(() => {
-  if (grandiantEnabled.value) {
+  if (gradiantEnabled.value) {
     const baseTime: number = working.value ? pomodoroTime.value.minutes * 60 + pomodoroTime.value.seconds : breakTime.value.small.minutes * 60 + breakTime.value.small.seconds * 60
     const currentTime: number = baseTime - (minutes.value * 60 + seconds.value)
     if (working.value) {
@@ -257,6 +260,14 @@ watchEffect(() => {
     }
   }
 })
+
+const clearData = (): void => {
+  if (!confirm("You're about to delete all of your data (except task list).\nAre you sure you want to do that ? 🧹")) {
+    return
+  }
+  parameters.reset()
+  user.reset()
+}
 </script>
 
 <style>
@@ -270,6 +281,11 @@ watchEffect(() => {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
+}
+
+footer {
+  display:grid;
+  grid-template-columns: repeat(3,1fr);
 }
 
 button:hover {
@@ -345,13 +361,6 @@ footer {
 
 a {
   color: #00308F;
-}
-
-#fullscreen-button {
-  position: absolute;
-  bottom: 5px;
-  left: 5px;
-  z-index: 2;
 }
 
 #fullscreen-logo {

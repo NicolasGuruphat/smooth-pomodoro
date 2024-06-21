@@ -1,6 +1,8 @@
 import ProgressBar from '@/components/ProgressBar.vue'
-import { useParameters, ParametersStore } from '@/store/Parameters'
-import { useUser, UserStore } from '@/store/User'
+import type { ParametersStore } from '@/store/Parameters'
+import { useParameters } from '@/store/Parameters'
+import type { UserStore } from '@/store/User'
+import { useUser } from '@/store/User'
 import { mount } from '@vue/test-utils'
 import { createPinia, setActivePinia, storeToRefs } from 'pinia'
 

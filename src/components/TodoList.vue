@@ -23,12 +23,12 @@
         </span>
       </div>
     </div>
-    <div v-if="!isTaskListEmpty" style="text-align: left; padding:0.2rem">
-      <button @click='emptyList'>🗑️</button>
+    <div v-if="!isTaskListEmpty" style="display: flex;  justify-content: space-between; padding:0.2rem">
       <span :style="{ 'color': completedTasks === totalTasks ? 'green' : 'black' }">
         {{ completedTasks }}/{{ totalTasks }}
         <span v-if='completedTasks === totalTasks'>🎉🐲🐙🦞🐟</span>
       </span>
+      <button @click='emptyList'>🗑️</button>
     </div>
   </div>
 </template>
@@ -36,7 +36,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useStorage } from '@vueuse/core'
-import Task from '@/interfaces/Task'
+import type Task from '@/interfaces/Task'
 
 const props = defineProps(['selectedTask'])
 
@@ -127,7 +127,9 @@ const select = (task: Task): void => {
   }
 }
 const emptyList = (): void => {
-  taskList.value = []
+  if (confirm("You're about to delete all of your tasks.\nAre you sure you want to do that ? 🗑️")) {
+    taskList.value = []
+  }
 }
 
 const isTaskListEmpty = computed(() => {

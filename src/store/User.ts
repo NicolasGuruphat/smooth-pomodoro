@@ -1,28 +1,26 @@
-import { defineStore, storeToRefs } from 'pinia'
+import { defineStore } from 'pinia'
 import { useStorage } from '@vueuse/core'
-import { useParameters } from './Parameters'
+import { defaultValuesParameters } from './Parameters'
+import type UserReturn from '@/interfaces/store/UserReturn'
+
+export const defaultValuesUser : UserReturn = {
+  currentPomodoroNumber: 1,
+  totalPomodoriDone: 0,
+  minutes: defaultValuesParameters.pomodoroTime.minutes,
+  seconds: defaultValuesParameters.pomodoroTime.seconds
+}
 
 export const useUser = defineStore('user', () => {
-  const store = useParameters()
-  const { pomodoroTime } = storeToRefs(store)
+  const currentPomodoroNumber = useStorage<number>('currentPomodoroNumber', defaultValuesUser.totalPomodoriDone, localStorage)
+  const totalPomodoriDone = useStorage<number>('totalPomodoriDone', defaultValuesUser.currentPomodoroNumber, localStorage)
+  const minutes = useStorage<number>('minutes', defaultValuesUser.minutes, localStorage)
+  const seconds = useStorage<number>('seconds', defaultValuesUser.seconds, localStorage)
 
-  const defaultValues = {
-    currentPomoroNumber: 1,
-    totalPomodoriDone: 0,
-    minutes: pomodoroTime.value.minutes,
-    seconds: pomodoroTime.value.seconds
-  }
-
-  const currentPomodoroNumber = useStorage<number>('currentPomodoroNumber', defaultValues.totalPomodoriDone, localStorage)
-  const totalPomodoriDone = useStorage<number>('totalPomodoriDone', defaultValues.currentPomoroNumber, localStorage)
-  const minutes = useStorage<number>('minutes', defaultValues.minutes, localStorage)
-  const seconds = useStorage<number>('seconds', defaultValues.seconds, localStorage)
-
-  const reset = () : void => {
-    currentPomodoroNumber.value = defaultValues.currentPomoroNumber
-    totalPomodoriDone.value = defaultValues.totalPomodoriDone
-    minutes.value = defaultValues.minutes
-    seconds.value = defaultValues.seconds
+  const reset = (): void => {
+    currentPomodoroNumber.value = defaultValuesUser.currentPomodoroNumber
+    totalPomodoriDone.value = defaultValuesUser.totalPomodoriDone
+    minutes.value = defaultValuesUser.minutes
+    seconds.value = defaultValuesUser.seconds
   }
 
   return { currentPomodoroNumber, totalPomodoriDone, minutes, seconds, reset }

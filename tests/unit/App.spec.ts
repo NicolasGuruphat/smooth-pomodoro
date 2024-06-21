@@ -2,16 +2,22 @@
 import App from '@/App.vue'
 import { mount } from '@vue/test-utils'
 import StatistiquesBlock from '@/components/StatistiquesBlock.vue'
-import { setActivePinia, createPinia } from 'pinia'
-import { useUser } from '@/store/User'
-import { useParameters } from '@/store/Parameters'
+import { setActivePinia, createPinia, storeToRefs } from 'pinia'
+import type { UserStore } from '@/store/User'
+import { useUser, defaultValuesUser } from '@/store/User'
+import type { ParametersStore } from '@/store/Parameters'
+import { useParameters, defaultValuesParameters } from '@/store/Parameters'
+
 describe('App', () => {
+  let userStore: UserStore
+  let parametersStore: ParametersStore
+
   beforeEach(() => {
     setActivePinia(createPinia())
-    const storeParameters = useParameters()
-    storeParameters.reset()
-    const storeUser = useUser()
-    storeUser.reset()
+    parametersStore = useParameters()
+    parametersStore.reset()
+    userStore = useUser()
+    userStore.reset()
   })
 
   it('displays starting time with correct value', () => {
@@ -86,5 +92,41 @@ describe('App', () => {
     const wrapper = mount(App)
     await wrapper.find('#remove-one-minute-button').find('button').trigger('click')
     expect(wrapper.find('#timer').text()).toBe('24:00')
+  })
+  it('clears all data when "CLEAR DATA" button is clicked', async () => {
+    window.confirm = jest.fn(() => true)
+
+    const { currentPomodoroNumber, totalPomodoriDone, minutes, seconds } = storeToRefs(userStore)
+    const { pomodoroTime, breakTime, audioEnabled, gradiantEnabled, pomodoriByCycle, goal } = storeToRefs(parametersStore)
+
+    const wrapper = mount(App)
+
+    currentPomodoroNumber.value = 99
+    totalPomodoriDone.value = 99
+    minutes.value = 99
+    seconds.value = 99
+
+    pomodoroTime.value = { minutes: 99, seconds: 99 }
+    breakTime.value = { big: { minutes: 99, seconds: 99 }, small: { minutes: 99, seconds: 99 } }
+    audioEnabled.value = !audioEnabled.value
+    gradiantEnabled.value = !gradiantEnabled.value
+    pomodoriByCycle.value = 99
+    goal.value = 99
+
+    await wrapper.find('#clear-data-button').find('button').trigger('click')
+
+    expect(window.confirm).toBeCalled()
+
+    expect(currentPomodoroNumber.value).toBe(defaultValuesUser.currentPomodoroNumber)
+    expect(totalPomodoriDone.value).toBe(defaultValuesUser.totalPomodoriDone)
+    expect(minutes.value).toBe(defaultValuesUser.minutes)
+    expect(seconds.value).toBe(defaultValuesUser.seconds)
+
+    expect(pomodoroTime.value).toStrictEqual(defaultValuesParameters.pomodoroTime)
+    expect(breakTime.value).toStrictEqual(defaultValuesParameters.breakTime)
+    expect(audioEnabled.value).toBe(defaultValuesParameters.audioEnabled)
+    expect(gradiantEnabled.value).toBe(defaultValuesParameters.gradiantEnabled)
+    expect(pomodoriByCycle.value).toBe(defaultValuesParameters.pomodoriByCycle)
+    expect(goal.value).toBe(defaultValuesParameters.goal)
   })
 })

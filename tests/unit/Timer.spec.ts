@@ -1,5 +1,6 @@
 import App from '@/App.vue'
-import { DOMWrapper, mount } from '@vue/test-utils'
+import type { DOMWrapper } from '@vue/test-utils'
+import { mount } from '@vue/test-utils'
 import { useUser } from '@/store/User'
 import { useParameters } from '@/store/Parameters'
 import { createPinia, setActivePinia } from 'pinia'

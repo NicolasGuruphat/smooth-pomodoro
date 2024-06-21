@@ -1,5 +1,6 @@
 import StatistiquesBlock from '@/components/StatistiquesBlock.vue'
-import { VueWrapper, mount } from '@vue/test-utils'
+import type { VueWrapper } from '@vue/test-utils'
+import { mount } from '@vue/test-utils'
 
 describe('Goal statistique', () => {
   const goalPart = (wrapper : VueWrapper) : string => { return wrapper.text().split('🎯')[1] }

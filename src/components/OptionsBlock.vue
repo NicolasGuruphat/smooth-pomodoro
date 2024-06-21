@@ -29,7 +29,7 @@
         <div class="option">
           <span class="info-label">✨ Gradiant background</span>
           <input type="checkbox" class="stat-selector stat-selector-button enabled-selector checkbox-selector"
-            v-model="grandiantEnabled">
+            v-model="gradiantEnabled">
           <label for="checkbox"></label>
         </div>
         <div class="option">
@@ -93,7 +93,7 @@ defineProps({
   }
 })
 
-const { pomodoroTime, breakTime, audioEnabled, grandiantEnabled, pomodoriByCycle, goal } = storeToRefs(store)
+const { pomodoroTime, breakTime, audioEnabled, gradiantEnabled, pomodoriByCycle, goal } = storeToRefs(store)
 
 </script>
 <style scoped>

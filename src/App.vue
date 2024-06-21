@@ -53,42 +53,151 @@ import { ref, computed, watchEffect } from 'vue'
 import fullscreenLogo from '@/assets/fullscreen.svg'
 import { useFullscreen, useFavicon, useDraggable } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
-import type Task from '@/interfaces/Task'
 import { useUser } from './store/User'
 
-const app = ref(null)
+import type Task from '@/interfaces/Task'
+import type TimerReturn from './interfaces/composable/TimerReturn'
 
+function useTimer () : TimerReturn {
+  function checkTime (): void {
+    if (minutes.value < 0) {
+      switchSession()
+    }
+    if (seconds.value < 0) {
+      seconds.value = 59
+      minutes.value--
+      if (minutes.value < 0) {
+        switchSession()
+      }
+    }
+  }
+  const clock = ref<HTMLElement | null>(null)
+  const intervalId = ref<number | null>(null)
+  const startTimer = (): void => {
+    intervalId.value = setInterval(() => {
+      seconds.value--
+    }, 1000)
+  }
+  const stopTimer = (): void => {
+    if (intervalId.value !== null) {
+      clearInterval(intervalId.value)
+      intervalId.value = null
+    }
+  }
+  const timer = computed(() => {
+    checkTime()
+    const minutesToDisplay: string = minutes.value < 10 ? '0' + minutes.value : minutes.value.toString()
+    const secondsToDisplay: string = seconds.value < 10 ? '0' + seconds.value : seconds.value.toString()
+    return minutesToDisplay + ':' + secondsToDisplay
+  })
+  function addOneMinute (): void {
+    minutes.value++
+  }
+
+  function removeOneMinute (): void {
+    minutes.value--
+  }
+  const blinkIntervalId = ref<number | null>(null)
+  const blink = ref(true)
+  const blinking = ref(true)
+  const startBlink = (): void => {
+    console.log('here')
+    blinking.value = true
+    blinkIntervalId.value = setInterval(() => {
+      if (clock.value == null) {
+        return
+      }
+      blink.value = !blink.value
+    }, 1000)
+  }
+  const stopBlink = (): void => {
+    if (blinkIntervalId.value !== null) {
+      clearInterval(blinkIntervalId.value)
+      intervalId.value = null
+
+      if (clock.value == null) {
+        return
+      }
+      blink.value = false
+      blinking.value = false
+    }
+  }
+  return { clock, timer, blinking, blink, startTimer, stopTimer, addOneMinute, removeOneMinute, startBlink, stopBlink }
+}
+
+function useIcon () : void {
+  const { blinking } = useTimer()
+  const icon = useFavicon()
+  icon.value = 'orangeTomato.png'
+
+  function changeIcon (color: string): void {
+    switch (color) {
+      case 'green':
+        icon.value = 'greenTomato.png'
+        break
+      case 'red':
+        icon.value = 'redTomato.png'
+        break
+      case 'orange':
+        icon.value = 'orangeTomato.png'
+        break
+    }
+  }
+  watchEffect(() => {
+    if (blinking.value) {
+      changeIcon('orange')
+    } else {
+      if (working.value) {
+        changeIcon('red')
+      } else {
+        changeIcon('green')
+      }
+    }
+  })
+}
+
+function useReset () : { globalReset: ()=>void; resetTimer: () => void; clearData: () => void} {
+  function globalReset (): void {
+    resetTimer()
+    totalPomodoriDone.value = 0
+    currentPomodoroNumber.value = 1
+  }
+
+  function resetTimer (): void {
+    minutes.value = pomodoroTime.value.minutes
+    seconds.value = pomodoroTime.value.seconds
+    working.value = true
+  }
+
+  const clearData = (): void => {
+    if (!confirm("You're about to delete all of your data (except task list).\nAre you sure you want to do that ? 🧹")) {
+      return
+    }
+    parameters.reset()
+    user.reset()
+  }
+  return { globalReset, resetTimer, clearData }
+}
+
+const app = ref(null)
 const showTodo = ref<boolean>(true)
 const selectedTask = ref<Task | null>(null)
-
-const parameters = useParameters()
-const { pomodoroTime, breakTime, audioEnabled, gradiantEnabled, pomodoriByCycle, goal } = storeToRefs(parameters)
-
-const user = useUser()
-const { currentPomodoroNumber, totalPomodoriDone, minutes, seconds } = storeToRefs(user)
-
-const { isFullscreen, toggle } = useFullscreen(app)
-
 const todoList = ref<HTMLElement | null>(null)
 
-const clock = ref<HTMLElement | null>(null)
-
+useIcon()
+const { globalReset, resetTimer, clearData } = useReset()
+const { clock, timer, blink, startTimer, stopTimer, addOneMinute, removeOneMinute, startBlink, stopBlink } = useTimer()
+const parameters = useParameters()
+const user = useUser()
+const { isFullscreen, toggle } = useFullscreen(app)
 const { style } = useDraggable(todoList, {
   initialValue: { x: 40, y: 40 }
 })
 
-const intervalId = ref<number | null>(null)
-const startTimer = (): void => {
-  intervalId.value = setInterval(() => {
-    seconds.value--
-  }, 1000)
-}
-const stopTimer = (): void => {
-  if (intervalId.value !== null) {
-    clearInterval(intervalId.value)
-    intervalId.value = null
-  }
-}
+const { currentPomodoroNumber, totalPomodoriDone, minutes, seconds } = storeToRefs(user)
+const { pomodoroTime, breakTime, audioEnabled, gradiantEnabled, pomodoriByCycle, goal } = storeToRefs(parameters)
+
+startBlink()
 
 const startOrStopLabel = ref<'START' | 'STOP'>('START')
 function startOrStop (): void {
@@ -102,35 +211,9 @@ function startOrStop (): void {
     startTimer()
   }
 }
-
-const blinkIntervalId = ref<number | null>(null)
-const blink = ref(true)
-const blinking = ref(true)
-const startBlink = (): void => {
-  blinking.value = true
-  blinkIntervalId.value = setInterval(() => {
-    if (clock.value == null) {
-      return
-    }
-    blink.value = !blink.value
-  }, 1000)
-}
-startBlink()
-const stopBlink = (): void => {
-  if (blinkIntervalId.value !== null) {
-    clearInterval(blinkIntervalId.value)
-    intervalId.value = null
-
-    if (clock.value == null) {
-      return
-    }
-    blink.value = false
-    blinking.value = false
-  }
-}
-
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const soundEffect = ref<HTMLMediaElement>(new Audio(require('./assets/gong_hit.wav')))
+
 const working = ref<boolean>(true)
 function switchSession (): void {
   if (audioEnabled.value) {
@@ -176,44 +259,10 @@ const progressBackgroundGradiant = computed(() => {
   }
 })
 
-const timer = computed(() => {
-  checkTime()
-  const minutesToDisplay: string = minutes.value < 10 ? '0' + minutes.value : minutes.value.toString()
-  const secondsToDisplay: string = seconds.value < 10 ? '0' + seconds.value : seconds.value.toString()
-  return minutesToDisplay + ':' + secondsToDisplay
-})
-
-function checkTime (): void {
-  if (minutes.value < 0) {
-    switchSession()
-  }
-  if (seconds.value < 0) {
-    seconds.value = 59
-    minutes.value--
-    if (minutes.value < 0) {
-      switchSession()
-    }
-  }
-}
-
-function addOneMinute (): void {
-  minutes.value++
-}
-
-function removeOneMinute (): void {
-  minutes.value--
-}
-
 function skipCurrentPomodoro (): void {
   minutes.value = 0
   seconds.value = 0
   seconds.value--
-}
-
-function globalReset (): void {
-  resetTimer()
-  totalPomodoriDone.value = 0
-  currentPomodoroNumber.value = 1
 }
 
 function goBackToFirstPomodoro (): void {
@@ -225,48 +274,6 @@ function goBackToFirstPomodoro (): void {
   }
   currentPomodoroNumber.value = 1
   resetTimer()
-}
-
-function resetTimer (): void {
-  minutes.value = pomodoroTime.value.minutes
-  seconds.value = pomodoroTime.value.seconds
-  working.value = true
-}
-
-const icon = useFavicon()
-icon.value = 'orangeTomato.png'
-
-function changeIcon (color: string): void {
-  switch (color) {
-    case 'green':
-      icon.value = 'greenTomato.png'
-      break
-    case 'red':
-      icon.value = 'redTomato.png'
-      break
-    case 'orange':
-      icon.value = 'orangeTomato.png'
-      break
-  }
-}
-watchEffect(() => {
-  if (blinking.value) {
-    changeIcon('orange')
-  } else {
-    if (working.value) {
-      changeIcon('red')
-    } else {
-      changeIcon('green')
-    }
-  }
-})
-
-const clearData = (): void => {
-  if (!confirm("You're about to delete all of your data (except task list).\nAre you sure you want to do that ? 🧹")) {
-    return
-  }
-  parameters.reset()
-  user.reset()
 }
 </script>
 

@@ -1,46 +1,46 @@
 <template ref="app">
-  <div class="progress-background-base" :style="progressBackgroundGradiant">
-    <StatistiquesBlock class="stats-block" :currentPomodoroNumber="currentPomodoroNumber"
-      :pomodoriByCycle="pomodoriByCycle" :totalPomodoriDone="totalPomodoriDone" :goal="goal" :timer="timer">
-    </StatistiquesBlock>
-    <OptionsBlock class="options-block" v-model:showTodo="showTodo">
-    </OptionsBlock>
-    <div id="timer-group">
-      <ActionButton class="minute-button" id="remove-one-minute-button" :action="removeOneMinute">&#60;</ActionButton>
-      <span id="timer"  ref="clock" :class="{ 'working': working, 'not-working': !working , 'blink': blink}">{{ timer }}</span>
-      <ActionButton class="minute-button" id="add-one-minute-button" :action="addOneMinute">&#62;</ActionButton>
-    </div>
-    <div v-if="selectedTask !== null" class="focus-label">Focus on : <span id="selected-task">{{ selectedTask.name }}</span></div>
-    <div v-else class="focus-label">Click on a task to focus on it</div>
-    <div style="display: flex; justify-content: center; margin-top: 2rem;">
-      <div style="display:grid; grid-template-columns: fit-content(40%) fit-content(40%);box-sizing: border-box;">
-        <ActionButton id="start-stop-button" :action="startOrStop">{{ startOrStopLabel }}</ActionButton>
-        <ActionButton id="skip-button" :action="skipCurrentPomodoro">SKIP</ActionButton>
-        <ActionButton id="reset-button" :action="globalReset">RESET</ActionButton>
-        <ActionButton id="go-to-first-button" :action="goBackToFirstPomodoro"
-          :enabled="currentPomodoroNumber != 1 || !working">➔1<sup>st</sup>
-        </ActionButton>
+    <div class="progress-background-base" :style="progressBackgroundGradiant">
+      <StatistiquesBlock class="stats-block" :currentPomodoroNumber="currentPomodoroNumber"
+        :pomodoriByCycle="pomodoriByCycle" :totalPomodoriDone="totalPomodoriDone" :goal="goal" :timer="timer">
+      </StatistiquesBlock>
+      <OptionsBlock class="options-block" v-model:showTodo="showTodo">
+      </OptionsBlock>
+      <div id="timer-group">
+        <ActionButton class="minute-button" id="remove-one-minute-button" :action="removeOneMinute">&#60;</ActionButton>
+        <span id="timer"  ref="clock" :class="{ 'working': working, 'not-working': !working , 'blink': blink}">{{ timer }}</span>
+        <ActionButton class="minute-button" id="add-one-minute-button" :action="addOneMinute">&#62;</ActionButton>
       </div>
-    </div>
-    <ProgressBar />
-    <div ref="todoList" :style="style" style="position: fixed" v-show="showTodo">
-      <TodoList v-model:selectedTask="selectedTask" />
-    </div>
-    <footer>
-      <button :style="[isFullscreen ? 'opacity:0.5' : 'opacity:1']" id="fullscreen-button" @click="toggle" style="text-align: left;">
-        <img id="fullscreen-logo" :src="fullscreenLogo" alt="fullscreen-logo" />
-      </button>
-      <div>
-        <div>Smooth Pomodoro - by Nicolas Guruphat</div>
-        <a href="https://www.flaticon.com/authors/pixel-perfect" title="tomato icons">Tomato icons created by Pixel perfect
-          - Flaticon</a>
-        <br>
-        <a href="https://freesound.org/people/InspectorJ/sounds/411575/">Sound effect by InspectorJ - Freesound</a>
+      <div v-if="selectedTask !== null" class="focus-label">Focus on : <span id="selected-task">{{ selectedTask.name }}</span></div>
+      <div v-else class="focus-label">Click on a task to focus on it</div>
+      <div style="display: flex; justify-content: center; margin-top: 2rem;">
+        <div style="display:grid; grid-template-columns: fit-content(40%) fit-content(40%);box-sizing: border-box;">
+          <ActionButton id="start-stop-button" :action="startOrStop">{{ startOrStopLabel }}</ActionButton>
+          <ActionButton id="skip-button" :action="skipCurrentPomodoro">SKIP</ActionButton>
+          <ActionButton id="reset-button" :action="globalReset">RESET</ActionButton>
+          <ActionButton id="go-to-first-button" :action="goBackToFirstPomodoro"
+            :enabled="currentPomodoroNumber != 1 || !working">➔1<sup>st</sup>
+          </ActionButton>
+        </div>
       </div>
-      <ActionButton id="clear-data-button" :action="clearData" style="text-align: right;">CLEAR DATA</ActionButton>
-    </footer>
-  </div>
-</template>
+      <ProgressBar />
+      <div ref="todoList" :style="style" style="position: fixed" v-show="showTodo">
+        <TodoList v-model:selectedTask="selectedTask" />
+      </div>
+      <footer>
+        <button :style="[isFullscreen ? 'opacity:0.5' : 'opacity:1']" id="fullscreen-button" @click="toggle" style="text-align: left;">
+          <img id="fullscreen-logo" :src="fullscreenLogo" alt="fullscreen-logo" />
+        </button>
+        <div>
+          <div>Smooth Pomodoro - by Nicolas Guruphat</div>
+          <a href="https://www.flaticon.com/authors/pixel-perfect" title="tomato icons">Tomato icons created by Pixel perfect
+            - Flaticon</a>
+          <br>
+          <a href="https://freesound.org/people/InspectorJ/sounds/411575/">Sound effect by InspectorJ - Freesound</a>
+        </div>
+        <ActionButton id="clear-data-button" :action="clearData" style="text-align: right;">CLEAR DATA</ActionButton>
+      </footer>
+    </div>
+  </template>
 
 <script setup lang="ts">
 import { useParameters } from '@/store/Parameters'
@@ -49,15 +49,17 @@ import StatistiquesBlock from './components/StatistiquesBlock.vue'
 import OptionsBlock from './components/OptionsBlock.vue'
 import ProgressBar from './components/ProgressBar.vue'
 import TodoList from './components/TodoList.vue'
-import { ref, computed, watchEffect } from 'vue'
+import { ref, computed, watchEffect, onBeforeUnmount, watch, onMounted } from 'vue'
 import fullscreenLogo from '@/assets/fullscreen.svg'
-import { useFullscreen, useFavicon, useDraggable } from '@vueuse/core'
+import { useFullscreen, useFavicon, useDraggable, useWebWorker } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 import { useUser } from './store/User'
-
 import type Task from '@/interfaces/Task'
 import type TimerReturn from './interfaces/composable/TimerReturn'
 
+// onMounted(() => {
+//   alert('This application does not currently work properly on chrome browser. I hope the problem will soon be fixed')
+// })
 function useTimer () : TimerReturn {
   function checkTime (): void {
     if (minutes.value < 0) {
@@ -73,17 +75,23 @@ function useTimer () : TimerReturn {
   }
   const clock = ref<HTMLElement | null>(null)
   const intervalId = ref<number | null>(null)
+
+  const { data, post, terminate } = useWebWorker('./workers/timer.js')
+
+  watch(data, () => {
+    seconds.value--
+  })
+
   const startTimer = (): void => {
-    intervalId.value = setInterval(() => {
-      seconds.value--
-    }, 1000)
+    post('start')
   }
   const stopTimer = (): void => {
-    if (intervalId.value !== null) {
-      clearInterval(intervalId.value)
-      intervalId.value = null
-    }
+    post('stop')
   }
+
+  onBeforeUnmount(() => {
+    terminate()
+  })
   const timer = computed(() => {
     checkTime()
     const minutesToDisplay: string = minutes.value < 10 ? '0' + minutes.value : minutes.value.toString()
@@ -101,7 +109,6 @@ function useTimer () : TimerReturn {
   const blink = ref(true)
   const blinking = ref(true)
   const startBlink = (): void => {
-    console.log('here')
     blinking.value = true
     blinkIntervalId.value = setInterval(() => {
       if (clock.value == null) {
@@ -277,122 +284,122 @@ function goBackToFirstPomodoro (): void {
 }
 </script>
 
-<style>
-:root {
-  --grey: #2c3e50;
-  --white: rgb(252, 252, 252)
-}
+  <style>
+  :root {
+    --grey: #2c3e50;
+    --white: rgb(252, 252, 252)
+  }
 
-#app {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-}
+  #app {
+    font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-align: center;
+  }
 
-footer {
-  display:grid;
-  grid-template-columns: repeat(3,1fr);
-}
+  footer {
+    display:grid;
+    grid-template-columns: repeat(3,1fr);
+  }
 
-button:hover {
-  cursor: pointer;
-}
+  button:hover {
+    cursor: pointer;
+  }
 
-button {
-  border: none;
-  background: transparent;
-}
+  button {
+    border: none;
+    background: transparent;
+  }
 
-.working {
-  color: rgba(204, 27, 0, 1);
-  background-color: rgba(255, 181, 170, 0.5);
-}
+  .working {
+    color: rgba(204, 27, 0, 1);
+    background-color: rgba(255, 181, 170, 0.5);
+  }
 
-.not-working {
-  color: rgba(0, 204, 27, 1);
-  background-color: rgba(170, 255, 182, 0.5);
-}
+  .not-working {
+    color: rgba(0, 204, 27, 1);
+    background-color: rgba(170, 255, 182, 0.5);
+  }
 
-#timer {
-  font-size: 10vh;
-  font-weight: bold;
-  padding: 0.2rem 1rem;
-  border-radius: 4rem;
-  margin-top: 0.25rem;
-  /* -webkit-text-stroke: 1.5px var(--grey); */
-}
+  #timer {
+    font-size: 10vh;
+    font-weight: bold;
+    padding: 0.2rem 1rem;
+    border-radius: 4rem;
+    margin-top: 0.25rem;
+    /* -webkit-text-stroke: 1.5px var(--grey); */
+  }
 
-.progress-background-base {
-  height: 100vh;
-  width: 100vw;
-  position: absolute;
-  top: 0;
-  left: 0;
-  /* background: rgb(255,0,0) */
-}
+  .progress-background-base {
+    height: 100vh;
+    width: 100vw;
+    position: absolute;
+    top: 0;
+    left: 0;
+    /* background: rgb(255,0,0) */
+  }
 
-.stats-block {
-  text-align: left;
-  position: absolute;
-  margin-top: 5px;
-  margin-right: 5px;
-  right: 0;
-  font-size: 1.25rem;
-  border: none;
-  color: rgba(0, 0, 0, 0.8)
-}
+  .stats-block {
+    text-align: left;
+    position: absolute;
+    margin-top: 5px;
+    margin-right: 5px;
+    right: 0;
+    font-size: 1.25rem;
+    border: none;
+    color: rgba(0, 0, 0, 0.8)
+  }
 
-.options-block {
-  text-align: left;
-  position: absolute;
-  margin-top: 5px;
-  margin-right: 5px;
-  left: 5px;
-  font-size: 20px;
-  border: none;
-  color: rgba(0, 0, 0, 0.8)
-}
+  .options-block {
+    text-align: left;
+    position: absolute;
+    margin-top: 5px;
+    margin-right: 5px;
+    left: 5px;
+    font-size: 20px;
+    border: none;
+    color: rgba(0, 0, 0, 0.8)
+  }
 
-.info-value {
-  text-decoration: underline;
-}
+  .info-value {
+    text-decoration: underline;
+  }
 
-footer {
-  position: fixed;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  text-align: center;
-}
+  footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+  }
 
-a {
-  color: #00308F;
-}
+  a {
+    color: #00308F;
+  }
 
-#fullscreen-logo {
-  height: 50px;
-}
+  #fullscreen-logo {
+    height: 50px;
+  }
 
-.minute-button {
-  display: inline;
-  margin-top: 1.5vh;
-}
+  .minute-button {
+    display: inline;
+    margin-top: 1.5vh;
+  }
 
-#timer-group {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.focus-label {
-  font-style: italic;
-  color:grey;
-  font-size: 1.5rem;
-}
-#selected-task {
-  text-decoration: underline;
-}
-.blink {
-  color: orange !important
-}
-</style>
+  #timer-group {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .focus-label {
+    font-style: italic;
+    color:grey;
+    font-size: 1.5rem;
+  }
+  /* #selected-task {
+    text-decoration: underline;
+  } */
+  .blink {
+    color: orange !important
+  }
+  </style>

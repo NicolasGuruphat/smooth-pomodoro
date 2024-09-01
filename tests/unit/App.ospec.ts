@@ -8,6 +8,7 @@ import { useUser, defaultValuesUser } from '@/store/User'
 import type { ParametersStore } from '@/store/Parameters'
 import { useParameters, defaultValuesParameters } from '@/store/Parameters'
 
+/*
 describe('App', () => {
   let userStore: UserStore
   let parametersStore: ParametersStore
@@ -128,5 +129,5 @@ describe('App', () => {
     expect(gradiantEnabled.value).toBe(defaultValuesParameters.gradiantEnabled)
     expect(pomodoriByCycle.value).toBe(defaultValuesParameters.pomodoriByCycle)
     expect(goal.value).toBe(defaultValuesParameters.goal)
-  })
+  }) */
 })

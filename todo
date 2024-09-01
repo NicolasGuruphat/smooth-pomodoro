@@ -1,0 +1,36 @@
+inverser l'ordre des bouttons :
+valider haut bas éditer supprimer
+
+si une tâche est éditée alors qu'elle est séléctionné en focus
+
+bloquer tout quand l'édition est activée ?
+
+confirmation (modal, voir la nouvelle balise html) sur le bouton reset qui explique ce que le bouton fait (+ possibilité de dismiss forever ?)
+
+faire une Task List pour la période de pause ?? (peut être pas une bonne idée)
+
+difference session storage and local storage (peut être stocker ce qui est dans le store User dans le sessions storage (ça permet peut être d'éviter les conflits si on a plusieurs onglets d'ouverts))
+
+bug fullscreen : f11 n'enlève pas quand on a trigger avec le boutton. pb avec la librairie ?
+
+ajouter une licence ?
+
+https://dl.acm.org/doi/abs/10.1145/3498765.3498844
+
+https://scholar.google.com/scholar?hl=fr&as_sdt=0%2C5&q=pomodoro+technique&btnG=&oq=pomodoro
+
+
+Il faut absoluement que je règle le problème dans Chrome (worker) omg https://vueuse.org/core/useWebWorker/ ou https://www.npmjs.com/package/worker-interval
+
+
+Dans les tests, mount dans le beforeEach
+
+revoir statistiqueBlock -> props à transformer en store
+
+pomodoro en ligne de commande
+
+le bouton fullscren prend tout le quart en bas de l'écran
+bug avec la tâche focus lorsqu'on l'édite pendant qu'elle est séléctionnée
+pb de mise à jour de la favicon
+
+split le composant app
